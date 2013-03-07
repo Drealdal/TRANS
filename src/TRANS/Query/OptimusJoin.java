@@ -11,12 +11,10 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.BooleanWritable;
-import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.ipc.RPC;
 import org.jdom2.JDOMException;
 
-import TRANS.Array.ArrayID;
 import TRANS.Array.DataChunk;
 import TRANS.Array.OptimusArray;
 import TRANS.Array.OptimusShape;
@@ -172,7 +170,6 @@ public class OptimusJoin {
 		}catch(Exception e){
 			if(array3 == null)
 			{
-				ArrayID id = ci.createArray(zone3.getId(), new Text(z3name[1]),new FloatWritable(0));
 				array3 = ci.openArray(zone3.getId(), new Text(z3name[1]));
 			}
 		}

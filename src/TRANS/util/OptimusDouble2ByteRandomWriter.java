@@ -1,7 +1,5 @@
 package TRANS.util;
 
-import java.io.DataOutput;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 

@@ -11,7 +11,6 @@ import org.apache.hadoop.ipc.RPC;
 import TRANS.Array.OptimusShape;
 import TRANS.Array.OptimusShapes;
 import TRANS.Array.OptimusZone;
-import TRANS.Exceptions.WrongArgumentException;
 import TRANS.Protocol.OptimusCatalogProtocol;
 import TRANS.util.OptimusConfiguration;
 import TRANS.util.OptimusDefault;

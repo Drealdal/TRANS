@@ -143,20 +143,14 @@ public class PartitionReader {
 		for(int i = 0 ; i < start.length; i++)
 			rsize *= off[i];
 		
-		double [] rdata = null;
-		if(this.doRead )
-			rdata = new double[rsize];
+		if(this.doRead ) {
+		}
 	
 		
 		Vector<int []> strategy = shapes;
 		int [] count = new int [strategy.size() - 1];
 		for(DataChunk c:chunks)
 		{
-			int id = c.getChunkNum();
-			PID p = new PID(id);
-			
-	
-			
 			int dataSize = java.lang.Integer.MAX_VALUE;
 			int take = -1;
 		

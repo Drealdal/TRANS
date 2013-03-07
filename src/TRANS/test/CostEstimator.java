@@ -10,11 +10,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
-import TRANS.Client.NetcdfLoader;
 import TRANS.Client.Reader.PartitionReader;
 import TRANS.Exceptions.WrongArgumentException;
-import TRANS.util.OptimusConfiguration;
-import TRANS.util.OptimusDefault;
 
 public class CostEstimator {
 public static void main(String []args) throws ParseException, IOException, WrongArgumentException

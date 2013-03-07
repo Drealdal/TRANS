@@ -2,8 +2,6 @@ package TRANS.util;
 
 public class OptimusDataWriter implements Runnable {
 
-	private byte [] data = null;
-	
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub

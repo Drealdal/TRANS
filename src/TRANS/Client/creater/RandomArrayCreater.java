@@ -15,7 +15,6 @@ import org.jdom2.JDOMException;
 import TRANS.Array.DataChunk;
 import TRANS.Array.OptimusZone;
 import TRANS.Client.ArrayCreater;
-import TRANS.Client.NetcdfLoader;
 import TRANS.Client.ZoneClient;
 import TRANS.Exceptions.WrongArgumentException;
 import TRANS.util.OptimusConfiguration;

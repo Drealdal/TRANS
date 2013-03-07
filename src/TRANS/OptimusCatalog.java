@@ -18,8 +18,6 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -44,16 +42,12 @@ import TRANS.Array.Partition;
 import TRANS.Array.RID;
 import TRANS.Array.ZoneID;
 import TRANS.Exceptions.WrongArgumentException;
-import TRANS.OptimusReplicationManager.OptimusTimeRunner;
 import TRANS.Protocol.OptimusCatalogProtocol;
 import TRANS.Protocol.OptimusDataProtocol;
 import TRANS.util.Host;
 import TRANS.util.OptimusConfiguration;
 import TRANS.util.OptimusDefault;
 
-/*
- * Catalog ����ά�������Ԫ�����Ϣ��CataLog ��SqlLite������Ԫ�����Ϣ
- */
 public class OptimusCatalog extends Thread implements OptimusCatalogProtocol, Writable  {
 
 	class OptimusTimeRunner extends TimerTask {
@@ -263,20 +257,18 @@ public class OptimusCatalog extends Thread implements OptimusCatalogProtocol, Wr
 
 	private Host getNewNodeForZone(ZoneID id)
 	{
-		int l ;
-		Host host = null;
-		java.util.Random rd = new java.util.Random();
+	/*	Host host = null;
 		while(true)
 		{
-			l = rd.nextInt()%this.liveNodes.size();
-	//		host = this.liveNodes.;
+			//		host = this.liveNodes.;
 			if( ! host.isDead() )
 			{
 				break;
 			}
 		}
-		
-		return host;
+	*/	
+	//	return host;
+		return null;
 	}
 	
 	@Override
@@ -512,8 +504,6 @@ public class OptimusCatalog extends Thread implements OptimusCatalogProtocol, Wr
 					try {
 						sin = socket.accept();
 						 DataOutputStream cout = new DataOutputStream(sin.getOutputStream());
-						 DataInputStream cin = new DataInputStream(sin.getInputStream());
-						 
 						 cout.write(new String("Hello World!").getBytes());
 					} catch (IOException e) {
 						// TODO Auto-generated catch block

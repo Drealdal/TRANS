@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 import org.jdom2.JDOMException;
 
 import TRANS.Array.DataChunk;
-import TRANS.Array.OptimusShape;
 import TRANS.Array.OptimusZone;
 import TRANS.Client.ArrayCreater;
 import TRANS.Client.ZoneClient;
@@ -15,7 +14,6 @@ import TRANS.Client.creater.OptimusMemScanner;
 import TRANS.Client.creater.OptimusScanner;
 import TRANS.Exceptions.WrongArgumentException;
 import TRANS.util.OptimusConfiguration;
-import TRANS.util.OptimusData;
 
 public class ClientTest {
 

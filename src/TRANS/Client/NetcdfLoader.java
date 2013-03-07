@@ -15,12 +15,10 @@ import org.apache.commons.cli.PosixParser;
 import org.jdom2.JDOMException;
 
 import TRANS.Array.DataChunk;
-import TRANS.Array.OptimusShape;
 import TRANS.Array.OptimusZone;
 import TRANS.Client.creater.NetcdfScanner;
 import TRANS.Exceptions.WrongArgumentException;
 import TRANS.util.OptimusConfiguration;
-import TRANS.util.OptimusData;
 import TRANS.util.OptimusDefault;
 
 /**

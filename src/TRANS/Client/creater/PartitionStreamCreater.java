@@ -40,8 +40,6 @@ public class PartitionStreamCreater extends PartitionCreater {
 			cin = host.getReplicateReply();
 			
 			cout.writeInt( relicateSize );
-			Partition p2 = new Partition(p.getRmanager(),zone.getId(),
-					p.getArrayid(),p.getPid(),new RID(relicateSize - 1));
 			p.write(cout);
 			new OptimusShape(this.srcShape).write(cout);
 			

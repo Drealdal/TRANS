@@ -13,7 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.hadoop.io.Writable;
 
-
 import TRANS.OptimusNode;
 import TRANS.OptimusReplicationManager;
 import TRANS.Exceptions.WrongArgumentException;
@@ -21,9 +20,7 @@ import TRANS.util.Byte2DoubleReader;
 import TRANS.util.ByteWriter;
 import TRANS.util.Host;
 import TRANS.util.OptimusDouble2ByteRandomWriter;
-import TRANS.util.OptimusDouble2ByteStreamWriter;
 import TRANS.util.OptimusTranslator;
-import TRANS.util.OptimusWriter;
 
 public class Partition implements Writable, Runnable {
 	static Log log = OptimusNode.LOG;
@@ -174,8 +171,6 @@ public class Partition implements Writable, Runnable {
 			len *= vsize[i];
 		}
 
-		long btime = System.currentTimeMillis();
-
 		if (schunk.ShapeEquals(dchunk)) {
 			len *= 8;
 			byte[] tmp = new byte[4096];
@@ -185,26 +180,11 @@ public class Partition implements Writable, Runnable {
 				this.writeData(tmp, 0, tlen);
 			}
 		} else {
-				int tlen = len;
-		//	double[] data = new double[tlen];
-		/*	double tmp = 0;
-			for (int i = 0; i < tlen; i++) {
-				schunk.getChunkByOff(i);
-				dchunk.getChunkByOff(ChunkTranslater.offTranslate(schunk));
-				tmp = cin.readDouble();
-				data[dchunk.getOffset()] = tmp;
-			}
-			for( int i = 0 ; i < data.length; i++)
-			{
-				this.dataf.writeDouble(data[i]);
-			}
-			*/
+				
 			int fnum = 0;
 			Byte2DoubleReader reader = new Byte2DoubleReader(1*1024*1024,null,cin);
 			double [] tdouble = null;
 			ByteWriter  w = new OptimusDouble2ByteRandomWriter(1024*1024,this.dataf,this);
-		//	OptimusWriter writer = new OptimusWriter(w,len*8);
-		//	writer.start();
 			
 			OptimusTranslator trans = new OptimusTranslator(len, schunk, dchunk,w);		
 			trans.start();
@@ -221,16 +201,8 @@ public class Partition implements Writable, Runnable {
 				trans.write(tdouble);
 				fnum+=tdouble.length;
 				
-			/*	for(int i = 0; i < tdouble.length;	 i++)
-				{
-		
-					schunk.getChunkByOff(fnum++);
-					dchunk.getChunkByOff(ChunkTranslater.offTranslate(schunk));
-					data[dchunk.getOffset()] = tdouble[i];
-				}
-				*/
+			
 			}
-		//	writer.write(data);
 			
 			
 		}

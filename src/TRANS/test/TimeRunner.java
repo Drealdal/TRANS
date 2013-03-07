@@ -17,8 +17,7 @@ public class TimeRunner extends TimerTask{
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		 Timer timer = new Timer();
-		 Timer timer2 = new Timer();
-         timer.schedule( new TimeRunner(1), 1,10 );
+		 timer.schedule( new TimeRunner(1), 1,10 );
          timer.schedule(new TimeRunner(2), 1,10 );
        
 	}

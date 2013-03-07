@@ -22,7 +22,6 @@ import TRANS.Client.creater.PartitionScannerCreater;
 import TRANS.Exceptions.WrongArgumentException;
 import TRANS.Protocol.OptimusCatalogProtocol;
 import TRANS.util.OptimusConfiguration;
-import TRANS.util.OptimusData;
 import TRANS.util.OptimusDefault;
 
 /**

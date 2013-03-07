@@ -2,7 +2,6 @@ package TRANS.Protocol;
 
 
 import org.apache.hadoop.io.FloatWritable;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.ipc.VersionedProtocol;
 
@@ -13,7 +12,6 @@ import TRANS.Array.OptimusArray;
 import TRANS.Array.OptimusShape;
 import TRANS.Array.OptimusShapes;
 import TRANS.Array.OptimusZone;
-import TRANS.Array.PID;
 import TRANS.Array.Partition;
 import TRANS.Array.RID;
 import TRANS.Array.ZoneID;

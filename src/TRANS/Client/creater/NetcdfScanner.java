@@ -70,6 +70,7 @@ public class NetcdfScanner implements OptimusScanner {
 		
 		return nc.findVariable(name).getShape();
 	}
+	@SuppressWarnings("deprecation")
 	public List<String> getVaribles(int []shape)
 	{
 		List<String> vnames = new ArrayList<String>();

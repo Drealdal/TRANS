@@ -52,7 +52,6 @@ public class OptimusTranslator extends Thread {
 				e.printStackTrace();
 				continue;
 			}
-			long b = System.currentTimeMillis();
 			synchronized(this.datas)
 			{
 				tdouble = this.datas.remove();
