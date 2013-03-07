@@ -1,0 +1,16 @@
+<Configuration>
+	<property>
+		<name>Optimus.catalog.host</name>
+		<value>node0</value>
+	</property>
+	
+	<property>
+		<name>Optimus.catalog.port</name>
+		<value>8002</value>
+	</property>
+	
+	<property>
+		<name>Optimus.hearbeat.time</name>
+		<value>300</value>
+	</property>
+</Configuration>
