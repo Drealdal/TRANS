@@ -243,7 +243,6 @@ public class OptimusCatalog extends Thread implements OptimusCatalogProtocol, Wr
 		return zone;
 	}
 
-	//��partition �Ļ��ŵ�node
 	private Host getLiveNode(Partition p) {
 		// TODO determine which node to recover the new node
 		OptimusZone z = this.zones.get(p.getZid());
