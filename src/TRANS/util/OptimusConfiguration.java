@@ -17,11 +17,15 @@ public class OptimusConfiguration {
 	java.util.TreeMap<String, String> conf = new java.util.TreeMap<String, String>();
 
 	public OptimusConfiguration() {
+		
 	}
 
 	public OptimusConfiguration(String confDir) throws WrongArgumentException,
 			JDOMException, IOException {
-
+		if(confDir==null)
+		{
+			confDir = System.getenv("TRANS_HOME");
+		}
 		File dir = new File(confDir);
 
 		if (dir == null || !dir.isDirectory()) {

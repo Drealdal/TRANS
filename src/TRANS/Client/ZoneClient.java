@@ -18,6 +18,12 @@ import TRANS.util.OptimusDefault;
 public class ZoneClient {
 
 	OptimusCatalogProtocol ci = null;
+	public OptimusCatalogProtocol getCi() {
+		return ci;
+	}
+	public void setCi(OptimusCatalogProtocol ci) {
+		this.ci = ci;
+	}
 	public ZoneClient(){};
 	public ZoneClient(OptimusConfiguration conf) throws IOException
 	{
