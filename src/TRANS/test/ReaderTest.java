@@ -24,14 +24,14 @@ public class ReaderTest {
 		PartitionReader reader = new PartitionReader(conf);
 		
 		int [] start = {0,0};
-		int [] off = {2,2};
+		int [] off = {11,11};
 		ZoneClient zclient = new ZoneClient(conf);
-		OptimusZone zone = zclient.openZone("test");
+		OptimusZone zone = zclient.openZone("test2");
 		if(zone == null)
 		{
 			System.out.print("UnCreated zone or unknown error happened");
 		}
-		double [] data = reader.readData(zone,"test", start, off);
+		double [] data = reader.readData(zone,"test2", start, off);
 		for( int i = 0; i < data.length; i++)
 		{
 			System.out.print(data[i]+"\n");
