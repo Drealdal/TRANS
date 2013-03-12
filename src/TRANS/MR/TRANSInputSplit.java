@@ -5,6 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.io.WritableUtils;
 import org.apache.hadoop.mapreduce.InputSplit;
 
 import TRANS.Array.ArrayID;
@@ -51,14 +52,22 @@ public class TRANSInputSplit extends InputSplit implements Writable{
 	private OptimusArray array = null;
 	private OptimusShape start = null;
 	private OptimusShape off = null;
-	
-	public TRANSInputSplit(OptimusZone zone, OptimusArray array, PID pid,OptimusShape start, OptimusShape off)
+	private String confDir = null;
+	public TRANSInputSplit(){}
+	public TRANSInputSplit(OptimusZone zone, OptimusArray array, PID pid,OptimusShape start, OptimusShape off,String confDir)
 	{
 		this.zone = zone;
 		this.array = array;
 		this.pid = pid;
 		this.start = start;
 		this.off = off;
+		this.confDir = confDir;
+	}
+	public String getConfDir() {
+		return confDir;
+	}
+	public void setConfDir(String confDir) {
+		this.confDir = confDir;
 	}
 	@Override
 	public long getLength() throws IOException, InterruptedException {
@@ -70,7 +79,9 @@ public class TRANSInputSplit extends InputSplit implements Writable{
 	@Override
 	public String[] getLocations() throws IOException, InterruptedException {
 		// TODO Auto-generated method stub
-		return null;
+		String []hosts = new String[1];
+		hosts[0]="localhost";
+		return hosts;
 	}
 
 	@Override
@@ -82,6 +93,13 @@ public class TRANSInputSplit extends InputSplit implements Writable{
 		zone.readFields(arg0);
 		array = new OptimusArray();
 		array.readFields(arg0);
+		this.confDir = WritableUtils.readString(arg0);
+		this.start = new OptimusShape();
+		this.start.readFields(arg0);
+		
+		this.off = new OptimusShape();
+		this.off.readFields(arg0);
+		
 	}
 
 	@Override
@@ -90,6 +108,9 @@ public class TRANSInputSplit extends InputSplit implements Writable{
 		pid.write(arg0);
 		zone.write(arg0);
 		array.write(arg0);
+		WritableUtils.writeString(arg0, this.confDir);
+		this.start.write(arg0);
+		this.off.write(arg0);
 	}
 
 }

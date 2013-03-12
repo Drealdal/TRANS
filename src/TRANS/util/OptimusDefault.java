@@ -3,7 +3,7 @@ package TRANS.util;
 public class OptimusDefault {
 
 	
-	public static String CATALOG_HOST = "localhost";
+	public static String CATALOG_HOST = "node0";
 	public static int CATALOG_PORT = 2254;
 	
 	public static String DATA_HOST = "localhost";

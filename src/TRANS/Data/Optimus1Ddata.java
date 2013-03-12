@@ -8,6 +8,12 @@ import org.apache.hadoop.io.Writable;
 
 public class Optimus1Ddata implements Writable{
 
+	public double[] getData() {
+		return data;
+	}
+	public void setData(double[] data) {
+		this.data = data;
+	}
 	double [] data = null;
 	public Optimus1Ddata(){}
 	public Optimus1Ddata(double []data)

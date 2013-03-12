@@ -37,6 +37,7 @@ public class TRANSRecordReader extends RecordReader<PID, Optimus1Ddata> {
 		// TODO Auto-generated method stub
 		OptimusZone zone = split.getZone();
 		OptimusArray array = split.getArray();
+		System.out.println(array.getName());
 		try {
 			return new Optimus1Ddata(reader.readData(zone,array.getName(), split.getStart().getShape(), split.getOff().getShape()));
 		} catch (WrongArgumentException e) {
@@ -56,11 +57,14 @@ public class TRANSRecordReader extends RecordReader<PID, Optimus1Ddata> {
 	public void initialize(InputSplit arg0, TaskAttemptContext arg1)
 			throws IOException, InterruptedException {
 		try {
-			reader = new PartitionReader(new OptimusConfiguration(null));
-		} catch (WrongArgumentException | JDOMException e) {
+			reader = new PartitionReader(new OptimusConfiguration(((TRANSInputSplit)arg0).getConfDir()));
+		} catch (WrongArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.exit(-1);
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		split = (TRANSInputSplit) arg0;
 		

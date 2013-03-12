@@ -266,23 +266,6 @@ public class Partition implements Writable, Runnable {
 			
 		} else {
 			
-		//	int tlen = len;
-			//long System.currentTimeMillis();
-			//double [] data = new double [tlen];
-			/*double tmp = 0;
-			for (int i = 0; i < tlen; i++) {
-				schunk.getChunkByOff(i);
-				dchunk.getChunkByOff(ChunkTranslater.offTranslate(schunk));
-				tmp = cin.readDouble();
-				data[dchunk.getOffset()] = tmp;
-				data[i] = tmp;
-				nhostOut.writeDouble(tmp);
-
-			}
-			for( int i = 0 ; i < data.length; i++)
-			{
-				this.dataf.writeDouble(data[i]);
-			}*/
 			
 			int fnum = 0;
 			Byte2DoubleReader reader = new Byte2DoubleReader(1*1024*1024,nhostOut,cin);
@@ -302,20 +285,10 @@ public class Partition implements Writable, Runnable {
 					System.out.println("Unexpected EOF!:fnum"+fnum+" len:"+len);
 					continue;
 				}
-					trans.write(tdouble);
+				trans.write(tdouble);
 				fnum += tdouble.length;
-				/*
-					
-				for(int i = 0; i < tdouble.length; i++)
-				{
-		
-					schunk.getChunkByOff(fnum++);
-					dchunk.getChunkByOff(ChunkTranslater.offTranslate(schunk));
-					data[dchunk.getOffset()] = tdouble[i];
-				}
-				*/
+				
 			}
-			//writer.write(data);
 			
 		}
 		long b = System.currentTimeMillis();

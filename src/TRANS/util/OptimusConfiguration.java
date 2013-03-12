@@ -22,10 +22,8 @@ public class OptimusConfiguration {
 
 	public OptimusConfiguration(String confDir) throws WrongArgumentException,
 			JDOMException, IOException {
-		if(confDir==null)
-		{
-			confDir = System.getenv("TRANS_HOME");
-		}
+		
+		System.out.println(confDir);
 		File dir = new File(confDir);
 
 		if (dir == null || !dir.isDirectory()) {

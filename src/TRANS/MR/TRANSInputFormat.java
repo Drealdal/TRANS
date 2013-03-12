@@ -43,7 +43,12 @@ public class TRANSInputFormat extends FileInputFormat<PID, Optimus1Ddata>{
 		String aname = conf.get("TRANS.array.name");
 		String start = conf.get("TRANS.range.start");
 		String off = conf.get("TRANS.range.offset");
-		
+		String confDir = conf.get("TRANS.conf.dir");
+		if(confDir==null)
+		{
+			confDir = System.getenv("OPTIMUS_CONF");
+		}
+		System.out.println(zname+":"+aname+start+":"+off);
 		String []starts = start.split(",");
 		String []offs = off.split(",");
 		
@@ -61,11 +66,14 @@ public class TRANSInputFormat extends FileInputFormat<PID, Optimus1Ddata>{
 		}
 		ZoneClient zclient = null;
 		try {
-			zclient = new ZoneClient(new OptimusConfiguration(null));
-		} catch (WrongArgumentException | JDOMException e) {
+			zclient = new ZoneClient(new OptimusConfiguration(confDir));
+		} catch (WrongArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.exit(-2);
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		OptimusZone zone = zclient.openZone(zname);
 		if(zone == null)
@@ -86,7 +94,7 @@ public class TRANSInputFormat extends FileInputFormat<PID, Optimus1Ddata>{
 		}
 		List<InputSplit> splits = new LinkedList<InputSplit>();
 		
-		
+		System.out.println("Querying:" + zone.getName()+"."+array.getName());
 		for(DataChunk c: chunks)
 		{
 			int [] nstart = new int [spoint.length];
@@ -108,7 +116,7 @@ public class TRANSInputFormat extends FileInputFormat<PID, Optimus1Ddata>{
 			OptimusShape s = new OptimusShape(cstart);
 			OptimusShape o = new OptimusShape(noff);
 			PID p = new PID(c.getChunkNum());
-			splits.add(new TRANSInputSplit(zone,array,p,s,o));
+			splits.add(new TRANSInputSplit(zone,array,p,s,o,confDir));
 		}
 		return splits;
 	}

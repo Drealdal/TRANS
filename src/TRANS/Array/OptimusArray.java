@@ -37,7 +37,7 @@ public class OptimusArray implements Writable{
 		this.zid.readFields(arg0);
 		this.deleted = arg0.readBoolean();
 		this.devalue = arg0.readFloat();
-		WritableUtils.readString(arg0);
+		this.name = WritableUtils.readString(arg0);
 	}
 	@Override
 	public void write(DataOutput arg0) throws IOException {

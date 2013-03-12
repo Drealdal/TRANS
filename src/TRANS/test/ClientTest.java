@@ -86,12 +86,12 @@ public class ClientTest {
 	 */
 	public static void main(String[] args) throws IOException, WrongArgumentException, JDOMException, InterruptedException {
 		// TODO Auto-generated method stub
-		int [] srcStart = {0,0,0};
-		int [] vsize = {64,64,8};
-		int [] shape = {8,8,8};
-		int [] srcShape = {8,8,1};// �д洢
-		int [] dstShape = {4,4,2};
-		int [] dstShape2 = {8,4,2};
+		int [] srcStart = {0,0};
+		int [] vsize = {8,8};
+		int [] shape = {8,8};
+		int [] srcShape = {8,8};// �д洢
+		int [] dstShape = {4,4};
+		int [] dstShape2 = {4,4};
 		Vector<int []>strategy = new Vector<int []>();
 		strategy.add(dstShape2);
 		strategy.add(dstShape);
@@ -100,7 +100,7 @@ public class ClientTest {
 		String name = "testArray";
 		OptimusConfiguration conf = new OptimusConfiguration("./conf");
 		ZoneClient zcreater = new ZoneClient(conf);
-		OptimusZone zone = zcreater.createZone("testArray", vsize, shape, strategy);
+		OptimusZone zone = zcreater.createZone("test", vsize, shape, strategy);
 		if(zone == null)
 		{
 			zone = zcreater.openZone(name);
@@ -111,7 +111,7 @@ public class ClientTest {
 			return;
 		}
 		long btime = System.currentTimeMillis();
-		ArrayCreater creater = new ArrayCreater(conf,zone,srcShape,"testArray",1,0);
+		ArrayCreater creater = new ArrayCreater(conf,zone,srcShape,"test",1,0);
 		creater.create();
 		
 		DataChunk chunk = new DataChunk(vsize,shape);

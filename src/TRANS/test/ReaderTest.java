@@ -23,15 +23,15 @@ public class ReaderTest {
 		OptimusConfiguration conf = new OptimusConfiguration("./conf");
 		PartitionReader reader = new PartitionReader(conf);
 		
-		int [] start = {1,1};
+		int [] start = {0,0};
 		int [] off = {2,2};
 		ZoneClient zclient = new ZoneClient(conf);
-		OptimusZone zone = zclient.openZone("random");
+		OptimusZone zone = zclient.openZone("test");
 		if(zone == null)
 		{
 			System.out.print("UnCreated zone or unknown error happened");
 		}
-		double [] data = reader.readData(zone,"random", start, off);
+		double [] data = reader.readData(zone,"test", start, off);
 		for( int i = 0; i < data.length; i++)
 		{
 			System.out.print(data[i]+"\n");
