@@ -30,7 +30,7 @@ public class AverageResult implements Writable {
   }
   
   public void addValue(double d){
-	  this._currentValue +=d;
+	  this._currentValue += d;
 	  this._valuesCombinedCount++;
   }
   public void addResult(AverageResult r)
@@ -40,7 +40,7 @@ public class AverageResult implements Writable {
   }
   public double getResult()
   {
-	  return this._valuesCombinedCount/this._currentValue;
+	  return this._currentValue/this._valuesCombinedCount;
   }
   
 public double get_currentValue() {

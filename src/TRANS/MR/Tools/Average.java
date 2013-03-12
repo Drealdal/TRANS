@@ -15,6 +15,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -97,7 +98,11 @@ public class Average {
     job.setMapperClass(AverageMapper.class);
     job.setCombinerClass(AverageCombiner.class);
     job.setReducerClass(AverageReducer.class);
-    job.setOutputKeyClass(IntWritable.class);
+    
+    job.setMapOutputKeyClass(LongWritable.class);
+    job.setMapOutputValueClass(AverageResult.class);
+    
+    job.setOutputKeyClass(LongWritable.class);
     job.setOutputValueClass(DoubleWritable.class);
     //    FileInputFormat.addInputPath(job, new Path(otherArgs[0]));
     FileOutputFormat.setOutputPath(job, new Path(out));
