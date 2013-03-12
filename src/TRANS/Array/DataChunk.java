@@ -18,6 +18,8 @@ public class DataChunk implements Comparable<DataChunk> {
 	private int size;
 	private int[] start = null;
 	private int[] vsize = null;
+	private int[] chunkSize = null;
+	private int offset = -1;
 	public DataChunk(DataChunk chunk)
 	{
 		this(chunk.getVsize(),chunk.getChunkStep());
@@ -35,6 +37,7 @@ public class DataChunk implements Comparable<DataChunk> {
 		this.size = 1;
 		for (int i = 0; i < this.vsize.length; i++) {
 			this.size *= this.chunkStep[i];
+			
 		}
 	}
 
@@ -139,19 +142,20 @@ public class DataChunk implements Comparable<DataChunk> {
 	 * ���һ������partition�е�λ���ж��Ƿ�������chunk
 	 */
 	public void getChunkByOff(long off) {
+		//TODO
 		int[] rpos = new int[vsize.length];
 		long toff = off;
-		for (int i = vsize.length -1 ; i>=0 ; i--) {
+		for (int i = vsize.length -1  ; i >=0 ; i--) {
 			rpos[i] =(int)toff % vsize[i];
 			toff /= vsize[i];
 		}
 		int cnum = 0;
 		int ichunk = 0;
-		for (int i = vsize.length - 1; i >= 0; i--) {
+		for (int i = 0 ; i < vsize.length ; i++) {
 			cnum = cnum
-					* vsize[i]
-					/ (this.chunkStep[i] + (vsize[i] % this.chunkStep[i] == 0 ? 0
-							: 1)) + rpos[i] / this.chunkStep[i];
+					*(( vsize[i]
+					/ (this.chunkStep[i] )+ (vsize[i] % this.chunkStep[i] == 0 ? 0
+							: 1))) + rpos[i] / this.chunkStep[i];
 			ichunk = rpos[i] % this.chunkStep[i] + ichunk * this.chunkStep[i];
 			this.start[i] = rpos[i] - rpos[i] % this.chunkStep[i];
 		}
@@ -178,6 +182,15 @@ public class DataChunk implements Comparable<DataChunk> {
 	public int[] getChunkStep() {
 		return this.chunkStep;
 	}
+	public int[] getChunkSize()
+	{
+		int [] csize = new int[this.vsize.length];
+		for(int i = 0 ; i < vsize.length; i++)
+		{
+			csize[i] = (vsize[i] - start[i]) > this.chunkStep[i] ? this.chunkStep[i]:(vsize[i] - start[i]);
+		}
+		return csize;
+	}
 
 	public int getInChunk() {
 		return inChunk;
@@ -187,6 +200,7 @@ public class DataChunk implements Comparable<DataChunk> {
 	 * ��i��chunk����ʼλ����partition�е�λ��
 	 */
 	public int[] getIthChunkPos(int num) {
+		//TODO
 		int[] rstart = new int[this.chunkStep.length];
 		rstart[0] = this.chunkStep[0] * num;
 		int i = 0;
@@ -199,10 +213,15 @@ public class DataChunk implements Comparable<DataChunk> {
 	}
 
 	public int getOffset() {
-		return this.size * this.chunkNum + this.inChunk;
+		return this.getChunkOffset() + this.inChunk;
 	}
 
 	public int getSize() {
+		int size = 1;
+		for(int i = 0 ; i < vsize.length; i++)
+		{
+			size *= (vsize[i] - start[i]) > this.chunkStep[i] ? this.chunkStep[i]:(vsize[i] - start[i]);
+		}
 		return size;
 	}
 
@@ -213,9 +232,9 @@ public class DataChunk implements Comparable<DataChunk> {
 	/*
 	 * chunk �еĵ�һ������partition�е�λ��
 	 */
-	public int getStratPos() {
-		return this.getSize()*this.chunkNum;
-	}
+	//public int getChunkPos() {
+	//	return this.getSize()*this.chunkNum;
+	//}
 
 	public int[] getVsize() {
 		return vsize;
@@ -228,7 +247,6 @@ public class DataChunk implements Comparable<DataChunk> {
 		int tmp = 0;
 		while (tmp < this.vsize.length
 				&& this.start[tmp] + this.chunkStep[tmp] >= this.vsize[tmp]) {
-
 			tmp++;
 		}
 		if (tmp >= this.vsize.length) {
@@ -401,5 +419,44 @@ public class DataChunk implements Comparable<DataChunk> {
 		return true;
 	}
 	
+	public int getChunkOffset()
+	{
+		if(this.offset != -1) return this.offset;
+		
+		int []starts = new int[start.length];
+		int []vsizes = new int[vsize.length];
+		int []cizes = new int[start.length];
+		for(int i = 0 ; i < start.length;i++)
+		{
+			starts[i] = start[start.length - 1 - i];
+			vsizes[i] = vsize[start.length - 1 - i];
+			cizes[i] = this.getChunkSize()[start.length - 1 - i];
+
+		}
+		
+		return getOffsetOfChunk(vsizes,cizes,starts);
+	}
 	
+	static int getOffsetOfChunk(int []vsize, int[] csize, int []start)
+	{
+		int [] volume = new int [vsize.length];
+		int []dsize = new int [vsize.length +1];
+		dsize[vsize.length]=1;
+		volume[0]=1;
+		for(int i = 1; i < volume.length; i++)
+		{
+			volume[i] = volume[i-1]*vsize[i-1];
+			
+		}
+		for(int i = vsize.length -1 ; i >= 0; i--)
+		{
+			dsize[i] = dsize[i+1] *( (vsize[i] - start[i]) > csize[i]? csize[i]:(vsize[i] - start[i]));
+		}
+		int offset = 0;
+		for(int i = volume.length - 1; i >= 0 ; i--)
+		{
+			offset = offset + start[i] * volume[i]*dsize[i+1];
+		}
+		return offset;
+	}
 }

@@ -16,7 +16,7 @@ import TRANS.Exceptions.WrongArgumentException;
 import TRANS.util.OptimusConfiguration;
 
 public class ClientTest {
-
+/*
 	static public int readFromMem(int start [] , int [] off,int []fsize,int []tsize, 
 			float [] fdata,int [] fstart, float[] tdata, int []tstart)
 	{
@@ -77,6 +77,7 @@ public class ClientTest {
 		}
 		return size;
 	}
+	*/
 	/**
 	 * @param args
 	 * @throws JDOMException 
@@ -87,11 +88,11 @@ public class ClientTest {
 	public static void main(String[] args) throws IOException, WrongArgumentException, JDOMException, InterruptedException {
 		// TODO Auto-generated method stub
 		int [] srcStart = {0,0};
-		int [] vsize = {64,64};
-		int [] shape = {8,8};
-		int [] srcShape = {8,8};// �д洢
-		int [] dstShape = {4,4};
-		int [] dstShape2 = {4,4};
+		int [] vsize = {9,9};
+		int [] shape = {4,4};
+		int [] srcShape = {4,1};// �д洢
+		int [] dstShape = {2,2};
+		int [] dstShape2 = {1,3};
 		Vector<int []>strategy = new Vector<int []>();
 		strategy.add(dstShape2);
 		strategy.add(dstShape);

@@ -22,7 +22,7 @@ public interface OptimusDataProtocol extends VersionedProtocol {
 	 */
 	static public long versionID = 1; 
 	public IntWritable RecoverReadAll(Host h,Partition p,RID rid);
-	public OptimusData readDouble(ArrayID aid,PID pid, OptimusShape start, OptimusShape off) throws IOException;
-	public Optimus1Ddata readAverage(ArrayID aid,PID pid, OptimusShape start, OptimusShape off) throws IOException;
+	public OptimusData readDouble(ArrayID aid,PID pid, OptimusShape pshape, OptimusShape start, OptimusShape off) throws IOException;
+	public Optimus1Ddata readAverage(ArrayID aid,PID pid,OptimusShape pshape, OptimusShape start, OptimusShape off) throws IOException;
 	public IntWritable RecoverPartition(Partition p,Host host);
 }

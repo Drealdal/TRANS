@@ -151,7 +151,8 @@ public class Partition implements Writable, Runnable {
 			DataInputStream cin, DataOutputStream cout) throws IOException, InterruptedException {
 
 		this.readFields(cin);
-		
+		OptimusShape psize = new OptimusShape();
+		psize.readFields(cin);
 		OptimusShape src = new OptimusShape();
 		src.readFields(cin);
 		
@@ -160,12 +161,12 @@ public class Partition implements Writable, Runnable {
 		OptimusZone zone = rmanager.getZone(this.zid);
 
 		Vector<int[]> shapes = zone.getStrategy().getShapes();
-		DataChunk dchunk = new DataChunk(zone.getPstep().getShape(),
+		DataChunk dchunk = new DataChunk(psize.getShape(),
 				shapes.get(0));
-		DataChunk schunk = new DataChunk(zone.getPstep().getShape(),
+		DataChunk schunk = new DataChunk(psize.getShape(),
 				src.getShape());
 
-		int[] vsize = zone.getPstep().getShape();
+		int[] vsize = psize.getShape();
 		int len = 1;
 		for (int i = 0; i < vsize.length; i++) {
 			len *= vsize[i];
@@ -218,6 +219,9 @@ public class Partition implements Writable, Runnable {
 			DataInputStream cin, DataOutputStream cout) throws IOException, InterruptedException {
 
 		this.readFields(cin);
+		OptimusShape psize = new OptimusShape();
+		psize.readFields(cin);
+		
 		this.rmanager = rmanager;
 		// this.rid.setId(rest);
 
@@ -226,9 +230,9 @@ public class Partition implements Writable, Runnable {
 		
 		OptimusZone zone = rmanager.getZone(this.zid);
 		Vector<int[]> shapes = zone.getStrategy().getShapes();
-		DataChunk dchunk = new DataChunk(zone.getPstep().getShape(),
+		DataChunk dchunk = new DataChunk(psize.getShape(),
 				shapes.get(rest));
-		DataChunk schunk = new DataChunk(zone.getPstep().getShape(),
+		DataChunk schunk = new DataChunk(psize.getShape(),
 				src.getShape());
 
 		Host h = rmanager.getReplicateHost(this, rest - 1);
@@ -242,10 +246,11 @@ public class Partition implements Writable, Runnable {
 		Partition p = new Partition(this.rmanager, this.zid, this.arrayid,
 				this.pid, new RID(this.rid.getId() - 1));
 		p.write(nhostOut);
+		psize.write(nhostOut);
 		src.write(nhostOut);
 		this.rmanager.createPatitionDataFile(this);
 
-		int[] vsize = zone.getPstep().getShape();
+		int[] vsize = psize.getShape();
 		int len = 1;
 		for (int i = 0; i < vsize.length; i++) {
 			len *= vsize[i];
@@ -317,7 +322,7 @@ public class Partition implements Writable, Runnable {
 
 	public double[] read(DataChunk chunk) throws IOException {
 		double[] data = new double[chunk.getSize()];
-		dataf.seek(chunk.getStratPos() * 8);
+		dataf.seek(chunk.getChunkOffset() * 8);
 		/*	for (int i = 0; i < chunk.getSize(); i++) {
 			data[i] = this.dataf.readDouble();
 		}

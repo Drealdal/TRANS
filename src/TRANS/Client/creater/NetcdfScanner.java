@@ -54,7 +54,7 @@ public class NetcdfScanner implements OptimusScanner {
 			return null;
 		}
 		try {
-				return  (double [] )v.read(chunk.getStart(), chunk.getChunkStep()).copyTo1DJavaArray();
+				return  (double [] )v.read(chunk.getStart(), chunk.getChunkSize()).copyTo1DJavaArray();
 			} catch (IOException e) {
 				
 				e.printStackTrace();

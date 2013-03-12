@@ -151,7 +151,7 @@ public class PartitionScannerCreater extends PartitionCreater implements Runnabl
 			OptimusReplicationManager rmanager = new OptimusReplicationManager(conf,ci);
 			Partition p = new Partition(rmanager,zone.getId(),this.arrayId,this.partitionId,new RID(relicateSize - 1));
 			p.write(cout);
-			
+			new OptimusShape(chunk.getChunkSize()).write(cout);
 			new OptimusShape(this.srcShape).write(cout);
 			
 			writer = new OptimusDouble2ByteStreamWriter(1024*1024,cout);

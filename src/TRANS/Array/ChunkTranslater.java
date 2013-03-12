@@ -13,13 +13,14 @@ public class ChunkTranslater {
 		int l = chunk.getVsize().length;
 		int [] chunkpos = new int [l];
 		int inChunk = chunk.getInChunk();
-		for(int i = 0 ; i < l ; ++i)
+		int []csize = chunk.getChunkSize();
+		for(int i = l - 1 ; i >= 0 ; i--)
 		{
-			chunkpos[i] = chunk.getStart()[i] + inChunk%chunk.getChunkStep()[i]; 
-			inChunk/=chunk.getChunkStep()[i];
+			chunkpos[i] = chunk.getStart()[i] + inChunk%csize[i]; 
+			inChunk/=csize[i];
 		}
 		int start = 0;
-		for( int i = l - 1 ; i >=0 ; --i)
+		for( int i = 0 ; i < l  ; i++)
 		{
 			start = chunkpos[i]  + start * chunk.getVsize()[i];
 		}

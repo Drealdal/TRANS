@@ -24,7 +24,7 @@ public class ReaderTest {
 		PartitionReader reader = new PartitionReader(conf);
 		
 		int [] start = {0,0};
-		int [] off = {11,11};
+		int [] off = {2,2};
 		ZoneClient zclient = new ZoneClient(conf);
 		OptimusZone zone = zclient.openZone("test2");
 		if(zone == null)

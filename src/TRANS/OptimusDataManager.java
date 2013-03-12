@@ -112,7 +112,7 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 	}
 
 	@Override
-	public OptimusData readDouble(ArrayID aid, PID pid, OptimusShape starts,
+	public OptimusData readDouble(ArrayID aid, PID pid,OptimusShape pshape, OptimusShape starts,
 			OptimusShape offs) throws IOException {
 
 		int[] start = starts.getShape();
@@ -128,7 +128,9 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 
 		OptimusZone zone = this.rmanger.getZone(p.getZid());
 		Vector<int[]> shapes = zone.getStrategy().getShapes();
-		DataChunk chunk = new DataChunk(zone.getPstep().getShape(),
+
+		
+		DataChunk chunk = new DataChunk(pshape.getShape(),
 				shapes.get(p.getRid().getId()));
 
 		int rsize = 1;
@@ -144,7 +146,7 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 			int[] noff = new int[start.length];
 
 			int[] cstart = c.getStart();
-			int[] coff = c.getChunkStep();
+			int[] coff = c.getChunkSize();
 			for (int i = 0; i < start.length; i++) {
 				nstart[i] = start[i] > cstart[i] ? start[i] : cstart[i];
 				noff[i] = start[i] + off[i] < cstart[i] + coff[i] ? start[i]
@@ -152,7 +154,7 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 				noff[i] -= nstart[i];
 			}
 			try {
-				readFromMem(nstart, noff, c.getChunkStep(), off, data,
+				readFromMem(nstart, noff, c.getChunkSize(), off, data,
 						c.getStart(), rdata, start);
 			} catch (Exception e) {
 				System.out.print("Exception");
@@ -192,7 +194,7 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 		int tpos = 0;
 		int[] fjump = new int[start.length];
 		int[] djump = new int[start.length];
-		for (int i = start.length - 1; i >= 0; --i) {
+		for (int i = 0; i < start.length ; i++) {
 			size *= off[i];
 			fpos = (fpos == 0) ? start[i] - fstart[i] : fpos * fsize[i]
 					+ start[i] - fstart[i];
@@ -200,11 +202,11 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 					+ start[i] - tstart[i];
 
 		}
-		fjump[0] = fsize[0];
-		djump[0] = tsize[0];
-		for (int i = 1; i < start.length; i++) {
-			fjump[i] = fsize[i] * fjump[i - 1];
-			djump[i] = tsize[i] * djump[i - 1];
+		fjump[start.length - 1] = fsize[start.length - 1];
+		djump[start.length - 1] = tsize[start.length - 1];
+		for (int i = start.length - 2; i >= 0; i--) {
+			fjump[i] = fsize[i] * fjump[i + 1];
+			djump[i] = tsize[i] * djump[i + 1];
 		}
 		if (size == 0) {
 			return 0;
@@ -214,27 +216,28 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 		int[] iter = new int[len + 1];
 
 		int j = 0;
-		while (iter[len] < off[len]) {
-			for (int i = 0; i < off[0]; i++) {
+		while (iter[0] < off[0]) {
+			for (int i = 0; i < off[len]; i++) {
 				tdata[tpos + i] = fdata[fpos + i];
 			}
-			j = 1;
-			while (j <= len) {
+			j = len  - 1;
+			
+			while (j >= 0) {
 				iter[j]++;
-				fpos += fjump[j - 1];
-				tpos += djump[j - 1];
+				fpos += fjump[j + 1];
+				tpos += djump[j + 1];
 				if (iter[j] < off[j]) {
 					break;
-				} else if (j == len) {
+				} else if (j == 0) {
 					break;
 				} else {
 
-					fpos -= iter[j] * fjump[j - 1];
-					tpos -= iter[j] * djump[j - 1];
+					fpos -= iter[j] * fjump[j + 1];
+					tpos -= iter[j] * djump[j + 1];
 
 					iter[j] = 0;
 				}
-				j++;
+				j--;
 			}
 
 		}
@@ -249,10 +252,10 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 	}
 
 	@Override
-	public Optimus1Ddata FindMaxMin(ArrayID aid, PID pid, OptimusShape start,
+	public Optimus1Ddata FindMaxMin(ArrayID aid, PID pid, OptimusShape pshape, OptimusShape start,
 			OptimusShape off) throws Exception {
 		// TODO Auto-generated method stub
-		OptimusData data = this.readDouble(aid, pid, start, off);
+		OptimusData data = this.readDouble(aid, pid, pshape, start, off);
 
 		if (data == null)
 			return null;
@@ -325,9 +328,9 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 	}
 
 	@Override
-	public Optimus1Ddata readAverage(ArrayID aid, PID pid, OptimusShape starts,
+	public Optimus1Ddata readAverage(ArrayID aid, PID pid, OptimusShape pshape, OptimusShape starts,
 			OptimusShape offs) throws IOException {
-		OptimusData data = this.readDouble(aid, pid, starts, offs);
+		OptimusData data = this.readDouble(aid, pid, pshape, starts, offs);
 		double [] d = data.getData();
 		double [] rdata = new double [2];
 		rdata[0] = d.length;
