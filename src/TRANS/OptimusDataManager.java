@@ -24,6 +24,7 @@ import TRANS.Array.RID;
 import TRANS.Calculator.OptimusCalculator;
 import TRANS.Client.creater.PartitionStreamCreater;
 import TRANS.Data.Optimus1Ddata;
+import TRANS.MR.io.AverageResult;
 import TRANS.Protocol.OptimusCalculatorProtocol;
 import TRANS.Protocol.OptimusDataProtocol;
 import TRANS.util.ByteWriter;
@@ -328,18 +329,19 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 	}
 
 	@Override
-	public Optimus1Ddata readAverage(ArrayID aid, PID pid, OptimusShape pshape, OptimusShape starts,
+	public AverageResult readAverage(ArrayID aid, PID pid, OptimusShape pshape, OptimusShape starts,
 			OptimusShape offs) throws IOException {
 		OptimusData data = this.readDouble(aid, pid, pshape, starts, offs);
 		double [] d = data.getData();
 		double [] rdata = new double [2];
 		rdata[0] = d.length;
+		AverageResult r = new AverageResult();
 		for(int i = 0 ; i < d.length; i++)
 		{
-			rdata[1]+=d[i];
+
+			r.addValue(d[i]);
 		}
-		rdata[1]=rdata[1]/rdata[0];
-		return new Optimus1Ddata(rdata);
+		return r;
 	}
 
 }

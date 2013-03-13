@@ -19,21 +19,21 @@ import TRANS.Array.OptimusArray;
 import TRANS.Array.OptimusShape;
 import TRANS.Array.OptimusZone;
 import TRANS.Array.PID;
+import TRANS.Array.Partition;
+import TRANS.Array.RID;
 import TRANS.Client.ZoneClient;
 import TRANS.Data.Optimus1Ddata;
 import TRANS.Exceptions.WrongArgumentException;
 import TRANS.Protocol.OptimusCatalogProtocol;
 import TRANS.util.OptimusConfiguration;
+import TRANS.util.OptimusData;
+import TRANS.util.TransHostList;
+import TRANS.MR.*;
 
+public abstract class TRANSInputFormat<K,V> extends FileInputFormat<K, V>{
 
-public class TRANSInputFormat extends FileInputFormat<PID, Optimus1Ddata>{
-
-	@Override
-	public RecordReader<PID, Optimus1Ddata> createRecordReader(InputSplit arg0,
-			TaskAttemptContext arg1) throws IOException, InterruptedException {
-		// TODO Auto-generated method stub
-		return new TRANSRecordReader();
-	}
+	
+	
 
 	@Override
 	public List<InputSplit> getSplits(JobContext arg0) throws IOException {
@@ -113,10 +113,23 @@ public class TRANSInputFormat extends FileInputFormat<PID, Optimus1Ddata>{
 				noff[i] -= nstart[i];
 				rstart[i] =nstart[i] - cstart[i]; // 
 			}
-			OptimusShape s = new OptimusShape(cstart);
+			OptimusShape s = new OptimusShape(rstart);
 			OptimusShape o = new OptimusShape(noff);
 			PID p = new PID(c.getChunkNum());
-			splits.add(new TRANSInputSplit(zone,array,p,s,o,confDir));
+			Partition pd = new Partition(zone.getId(),array.getId(),p,new RID(0));
+			TransHostList l = null;
+			try {
+				l = ci.getHosts(pd);
+			} catch (WrongArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.exit(-3);
+			}
+			TRANSInputSplit split = new TRANSInputSplit(zone,array,p,s,o,confDir);
+			split.setHosts(l);
+			split.setPshape(new OptimusShape(c.getChunkSize()));
+			splits.add(split);
+			
 		}
 		return splits;
 	}

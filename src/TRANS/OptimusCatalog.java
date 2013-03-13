@@ -47,6 +47,7 @@ import TRANS.Protocol.OptimusDataProtocol;
 import TRANS.util.Host;
 import TRANS.util.OptimusConfiguration;
 import TRANS.util.OptimusDefault;
+import TRANS.util.TransHostList;
 
 public class OptimusCatalog extends Thread implements OptimusCatalogProtocol, Writable  {
 
@@ -283,8 +284,21 @@ public class OptimusCatalog extends Thread implements OptimusCatalogProtocol, Wr
 		n %= this.nodes.size();
 		return this.nodes.get(new OptimusInstanceID(n));
 	}
+	@Override
+	public TransHostList getHosts(Partition p) throws WrongArgumentException {
+		// TODO Auto-generated method stub
+		ZoneID z = p.getZid();
+		OptimusZone zone = this.openZone(z);
+		int len = zone.getStrategy().getShapes().size() - 1;
+		TransHostList list = new TransHostList();
+		for(int i = 0; i < len; i++)
+		{
+			Host h = this.getReplicateHost(p, new RID(i));
+			list.appendHost(h, 0.0);
+		}
+		return list;
+	}
 	
-
 	@Override
 	public OptimusInstanceID heartBeat(Host host, OptimusPartitionStatus status) {
 		System.out.println("Heart Beat from Node:" + host.toString());
@@ -515,4 +529,6 @@ public class OptimusCatalog extends Thread implements OptimusCatalogProtocol, Wr
 		
 		
 	}
+
+	
 }

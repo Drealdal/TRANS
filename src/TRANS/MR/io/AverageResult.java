@@ -16,7 +16,13 @@ import org.apache.hadoop.io.WritableUtils;
  * for accurrate aggregation of partial results into the final result.
  */
 public class AverageResult implements Writable { 
-  private double _currentValue;
+  @Override
+	public String toString() {
+		return "AverageResult [_currentValue=" + _currentValue
+				+ ", _valuesCombinedCount=" + _valuesCombinedCount + "]";
+	}
+
+private double _currentValue;
   private int _valuesCombinedCount;
 
   private static final Log LOG = LogFactory.getLog(AverageResult.class);
@@ -33,6 +39,7 @@ public class AverageResult implements Writable {
 	  this._currentValue += d;
 	  this._valuesCombinedCount++;
   }
+  
   public void addResult(AverageResult r)
   {
 	  this._currentValue += r.get_currentValue();

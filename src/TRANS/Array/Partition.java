@@ -166,6 +166,9 @@ public class Partition implements Writable, Runnable {
 		DataChunk schunk = new DataChunk(psize.getShape(),
 				src.getShape());
 
+		System.out.println(schunk.toString());
+		System.out.println(dchunk.toString());
+		
 		int[] vsize = psize.getShape();
 		int len = 1;
 		for (int i = 0; i < vsize.length; i++) {
@@ -277,6 +280,7 @@ public class Partition implements Writable, Runnable {
 			double [] tdouble = null;
 			ByteWriter  w = new OptimusDouble2ByteRandomWriter(1024*1024,this.dataf,this);
 			OptimusTranslator trans = new OptimusTranslator(len, schunk, dchunk,w);
+		
 			//OptimusWriter writer = new OptimusWriter(w,len*8);
 			trans.start();
 			//writer.start();
@@ -335,6 +339,7 @@ public class Partition implements Writable, Runnable {
 		{
 			reader.readFromin(size - fnum);
 			tdouble = reader.readData();
+			if(tdouble == null) return data;
 			for(int i = 0; i < tdouble.length; i++)
 			{
 				data[fnum++] = tdouble[i];

@@ -1,6 +1,7 @@
 package TRANS.Array;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.Set;
 import java.util.TreeSet;
@@ -41,6 +42,15 @@ public class DataChunk implements Comparable<DataChunk> {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "DataChunk [chunkNum=" + chunkNum + ", chunkNumMove="
+				+ Arrays.toString(chunkNumMove) + ", chunkStep="
+				+ Arrays.toString(chunkStep) + ", inChunk=" + inChunk
+				+ ", size=" + size + ", start=" + Arrays.toString(start)
+				+ ", vsize=" + Arrays.toString(vsize) + ", chunkSize="
+				+ Arrays.toString(chunkSize) + ", offset=" + offset + "]";
+	}
 	@Override
 	public int compareTo(DataChunk chunk) {
 		DataChunk arg0 = (DataChunk)chunk;
@@ -87,7 +97,7 @@ public class DataChunk implements Comparable<DataChunk> {
 
 		long startPos = 0;
 		long rsize = 1;
-		int[] step = this.getChunkStep();
+		int[] step = this.getChunkSize();
 		long l = 1;
 		for (int i = step.length -1 ; i >= 0; i--) {
 			
@@ -149,7 +159,6 @@ public class DataChunk implements Comparable<DataChunk> {
 			rpos[i] =(int)toff % vsize[i];
 			toff /= vsize[i];
 		}
-		int []csize = this.getChunkSize();
 		int cnum = 0;
 		int ichunk = 0;
 		for (int i = 0 ; i < vsize.length ; i++) {
@@ -157,10 +166,14 @@ public class DataChunk implements Comparable<DataChunk> {
 					*(( vsize[i]
 					/ (this.chunkStep[i] )+ (vsize[i] % this.chunkStep[i] == 0 ? 0
 							: 1))) + rpos[i] / this.chunkStep[i];
-			ichunk = rpos[i] % csize[i] + ichunk * csize[i];
+			
 			this.start[i] = rpos[i] - rpos[i] % this.chunkStep[i];
 		}
-		
+		int []csize = this.getChunkSize();
+		for(int i = 0; i < csize.length; i++)
+		{
+			ichunk = rpos[i] % csize[i] + ichunk * csize[i];
+		}
 		this.chunkNum = cnum;
 		this.inChunk = ichunk;
 
@@ -245,12 +258,12 @@ public class DataChunk implements Comparable<DataChunk> {
 	 * �Ƿ�����һ��chunk
 	 */
 	public boolean hasNext() {
-		int tmp = 0;
-		while (tmp < this.vsize.length
+		int tmp = vsize.length - 1;
+		while (tmp >=0
 				&& this.start[tmp] + this.chunkStep[tmp] >= this.vsize[tmp]) {
-			tmp++;
+			tmp--;
 		}
-		if (tmp >= this.vsize.length) {
+		if (tmp < 0) {
 			return false;
 		}
 		return true;
@@ -259,12 +272,12 @@ public class DataChunk implements Comparable<DataChunk> {
 
 	private void initchunkMove() {
 		chunkNumMove = new int [this.vsize.length];
-		chunkNumMove[0] = 1;
+		chunkNumMove[vsize.length  - 1] = 1;
 		;
-		for (int i = 1; i < this.vsize.length; i++) {
-			this.chunkNumMove[i] = this.chunkNumMove[i - 1]
-					* (this.vsize[i - 1] / this.chunkStep[i - 1]
-							+ (this.vsize[i - 1] % this.chunkStep[i - 1] == 0 ? 0
+		for (int i = vsize.length  - 2; i >= 0; i--) {
+			this.chunkNumMove[i] = this.chunkNumMove[i + 1]
+					* (this.vsize[i + 1] / this.chunkStep[i + 1]
+							+ (this.vsize[i + 1] % this.chunkStep[i + 1] == 0 ? 0
 							: 1));
 		}
 		return;
@@ -329,13 +342,14 @@ public class DataChunk implements Comparable<DataChunk> {
 		if (!this.hasNext()) {
 			return false;
 		}
-		int tmp = 0;
-		while (tmp < this.vsize.length
+		int len = vsize.length -1;
+		int tmp = len;
+		while (tmp >= 0
 				&& this.start[tmp] + this.chunkStep[tmp] >= this.vsize[tmp]) {
-			tmp++;
+			tmp--;
 		}
 		this.start[tmp] += this.chunkStep[tmp];
-		for (int i = 0; i < tmp; i++) {
+		for (int i = len; i > tmp; i--) {
 			this.start[i] = 0;
 		}
 		this.chunkNum++;

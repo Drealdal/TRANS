@@ -2,6 +2,7 @@ package TRANS.Client.Reader;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.Vector;
 
@@ -118,8 +119,9 @@ public class PartitionReader {
 		
 			OptimusDataProtocol dp = h.getDataProtocol();
 			// start in the overall array
-	
-			
+			System.out.println(c);
+			System.out.println(Arrays.toString(rstart));
+			System.out.println(Arrays.toString(noff));
 			double [] data = dp.readDouble(array.getId(),p,new OptimusShape(c.getChunkSize()), new OptimusShape(rstart), new OptimusShape(noff)).getData();
 			OptimusDataManager.readFromMem(nstart, noff, noff, off, data, nstart, rdata, start);
 			}

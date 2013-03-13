@@ -30,8 +30,7 @@ import TRANS.MR.io.AverageResult;
 
 public class Average {
 
-
-  public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception {
     Configuration conf = new Configuration();
     String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
     
@@ -45,6 +44,7 @@ public class Average {
 	options.addOption("start",true,"start to read");
 	options.addOption("off",true,"shape to read, start.length == off.lengh");
 	options.addOption("o",true,"output path");
+	options.addOption("push",false,"Push calculate to datanode");
 	
 	CommandLine cmd = parser.parse(options, args);
 	if(cmd.hasOption("h"))
@@ -91,14 +91,22 @@ public class Average {
     conf.set("TRANS.array.name", arrayName);
     conf.set("TRANS.range.start",start);
     conf.set("TRANS.range.offset",off);
-  
-    Job job = new Job(conf, "word count");
+    Job job = null;
+    if(!cmd.hasOption("push"))
+    {
+    	job = new Job(conf, "Average");
+    	
+    	job.setInputFormatClass(TRANS.MR.TRANSNonPushInputFormat.class);
+    	job.setMapperClass(AverageMapper.class);
+    }else{
+    	job = new Job(conf,"Average Push");
+    	job.setInputFormatClass(TRANS.MR.TRANSPushInputFormat.class);
+    	job.setMapperClass(TRANS.MR.Mapper.AveragePushDownMapper.class);
+    }
     job.setJarByClass(Average.class);
-    job.setInputFormatClass(TRANS.MR.TRANSInputFormat.class);
-    job.setMapperClass(AverageMapper.class);
-    job.setCombinerClass(AverageCombiner.class);
-    job.setReducerClass(AverageReducer.class);
-    
+
+	job.setCombinerClass(AverageCombiner.class);
+	job.setReducerClass(AverageReducer.class);
     job.setMapOutputKeyClass(LongWritable.class);
     job.setMapOutputValueClass(AverageResult.class);
     

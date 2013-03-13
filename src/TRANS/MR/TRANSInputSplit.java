@@ -3,6 +3,7 @@ package TRANS.MR;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Vector;
 
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.WritableUtils;
@@ -13,6 +14,8 @@ import TRANS.Array.OptimusArray;
 import TRANS.Array.OptimusShape;
 import TRANS.Array.OptimusZone;
 import TRANS.Array.PID;
+import TRANS.util.Host;
+import TRANS.util.TransHostList;
 
 public class TRANSInputSplit extends InputSplit implements Writable{
 
@@ -51,8 +54,17 @@ public class TRANSInputSplit extends InputSplit implements Writable{
 	private OptimusZone zone = null;
 	private OptimusArray array = null;
 	private OptimusShape start = null;
+	private OptimusShape pshape = null;// shape of the partition
+	public OptimusShape getPshape() {
+		return pshape;
+	}
+	public void setPshape(OptimusShape pshape) {
+		this.pshape = pshape;
+	}
+
 	private OptimusShape off = null;
 	private String confDir = null;
+	private TransHostList hosts = new TransHostList();
 	public TRANSInputSplit(){}
 	public TRANSInputSplit(OptimusZone zone, OptimusArray array, PID pid,OptimusShape start, OptimusShape off,String confDir)
 	{
@@ -62,6 +74,18 @@ public class TRANSInputSplit extends InputSplit implements Writable{
 		this.start = start;
 		this.off = off;
 		this.confDir = confDir;
+	}
+	public TransHostList getHosts() {
+		return hosts;
+	}
+	public void setHosts(TransHostList hosts) {
+		this.hosts = hosts;
+	}
+	@Override
+	public String toString() {
+		return "TRANSInputSplit [pid=" + pid + ", zone=" + zone + ", array="
+				+ array + ", start=" + start + ", off=" + off + ", confDir="
+				+ confDir + "]";
 	}
 	public String getConfDir() {
 		return confDir;
@@ -79,9 +103,13 @@ public class TRANSInputSplit extends InputSplit implements Writable{
 	@Override
 	public String[] getLocations() throws IOException, InterruptedException {
 		// TODO Auto-generated method stub
-		String []hosts = new String[1];
-		hosts[0]="localhost";
-		return hosts;
+		Vector<Host> hosts = this.hosts.getHosts();
+		String []ret = new String[hosts.size()];
+		for(int i = 0; i < hosts.size();i++)
+		{
+			ret[i] = hosts.get(i).getHost();
+		}
+		return ret;
 	}
 
 	@Override
@@ -99,7 +127,9 @@ public class TRANSInputSplit extends InputSplit implements Writable{
 		
 		this.off = new OptimusShape();
 		this.off.readFields(arg0);
-		
+		this.hosts.readFields(arg0);
+		this.pshape = new OptimusShape();
+		this.pshape.readFields(arg0);
 	}
 
 	@Override
@@ -111,6 +141,8 @@ public class TRANSInputSplit extends InputSplit implements Writable{
 		WritableUtils.writeString(arg0, this.confDir);
 		this.start.write(arg0);
 		this.off.write(arg0);
+		hosts.write(arg0);
+		this.pshape.write(arg0);
 	}
 
 }

@@ -88,14 +88,14 @@ public class ClientTest {
 	public static void main(String[] args) throws IOException, WrongArgumentException, JDOMException, InterruptedException {
 		// TODO Auto-generated method stub
 		int [] srcStart = {0,0,0};
-		int [] vsize = {10,5,1};
-		int [] shape = {10,5,2};
-		int [] srcShape = {10,5,1};// �д洢
-		int [] dstShape = {1,5,2};
-		int [] dstShape2 = {10,1,5};
+		int [] vsize = {900, 247, 20};
+		int [] shape = {90,50,4};
+		int [] srcShape = {90,1,1};// �д洢
+		int [] dstShape = {90,1,1};
+		int [] dstShape2 = {9,5,4};
 		Vector<int []>strategy = new Vector<int []>();
 		strategy.add(dstShape2);
-		strategy.add(dstShape);
+		//strategy.add(dstShape);
 		
 		strategy.add(srcShape);
 		String name = "testArray";
@@ -112,11 +112,11 @@ public class ClientTest {
 			return;
 		}
 		long btime = System.currentTimeMillis();
-		ArrayCreater creater = new ArrayCreater(conf,zone,srcShape,"test",1,0);
+		ArrayCreater creater = new ArrayCreater(conf,zone,srcShape,"test2",1,0);
 		creater.create();
 		
 		DataChunk chunk = new DataChunk(vsize,shape);
-		double [] srcData = new double[900*124*75];
+		double [] srcData = new double[900*247*20];
 		for(int i = 0  ; i < srcData.length; i++)
 		{
 			srcData[i] = i;
@@ -128,6 +128,7 @@ public class ClientTest {
 		//	readFromMem(chunk.getStart(), chunk.getChunkStep(),vsize,shape, 
 		//			srcData,srcStart, dstData, chunk.getStart());
 			//creater.create();
+			System.out.println(chunk);
 			creater.createPartition(scanner,chunk,"testArray");
 		}while(chunk.nextChunk());
 		creater.close(1000, TimeUnit.SECONDS);

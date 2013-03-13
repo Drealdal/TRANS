@@ -17,6 +17,7 @@ import TRANS.Array.RID;
 import TRANS.Array.ZoneID;
 import TRANS.Exceptions.WrongArgumentException;
 import TRANS.util.Host;
+import TRANS.util.TransHostList;
 
 public interface OptimusCatalogProtocol extends VersionedProtocol {
 	 static public long versionID = 1; 
@@ -33,4 +34,5 @@ public interface OptimusCatalogProtocol extends VersionedProtocol {
 	 public OptimusArray openArray(ZoneID id,Text name)throws TRANS.Exceptions.WrongArgumentException;
 	 
 	 public Host getReplicateHost(Partition p,RID rid);
+	 public TransHostList getHosts(Partition p)throws WrongArgumentException;
 }

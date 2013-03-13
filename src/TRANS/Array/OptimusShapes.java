@@ -10,6 +10,10 @@ import org.apache.hadoop.io.Writable;
 
 public class OptimusShapes implements Writable {
 
+	@Override
+	public String toString() {
+		return "OptimusShapes [shapes=" + shapes + "]";
+	}
 	private Vector<int []> shapes = null;
 	public OptimusShapes(){};
 	public OptimusShapes(Vector<int []>shapes)
