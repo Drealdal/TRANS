@@ -149,6 +149,7 @@ public class DataChunk implements Comparable<DataChunk> {
 			rpos[i] =(int)toff % vsize[i];
 			toff /= vsize[i];
 		}
+		int []csize = this.getChunkSize();
 		int cnum = 0;
 		int ichunk = 0;
 		for (int i = 0 ; i < vsize.length ; i++) {
@@ -156,7 +157,7 @@ public class DataChunk implements Comparable<DataChunk> {
 					*(( vsize[i]
 					/ (this.chunkStep[i] )+ (vsize[i] % this.chunkStep[i] == 0 ? 0
 							: 1))) + rpos[i] / this.chunkStep[i];
-			ichunk = rpos[i] % this.chunkStep[i] + ichunk * this.chunkStep[i];
+			ichunk = rpos[i] % csize[i] + ichunk * csize[i];
 			this.start[i] = rpos[i] - rpos[i] % this.chunkStep[i];
 		}
 		
