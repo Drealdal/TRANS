@@ -20,6 +20,14 @@ public class DataChunk implements Comparable<DataChunk> {
 	private int[] start = null;
 	private int[] vsize = null;
 	private int[] chunkSize = null;
+	private int[] overlap = null;
+	public int[] getOverlap() {
+		return overlap;
+	}
+	public void setOverlap(int[] overlap) {
+		this.overlap = overlap;
+	}
+
 	private int offset = -1;
 	public DataChunk(DataChunk chunk)
 	{
@@ -38,7 +46,6 @@ public class DataChunk implements Comparable<DataChunk> {
 		this.size = 1;
 		for (int i = 0; i < this.vsize.length; i++) {
 			this.size *= this.chunkStep[i];
-			
 		}
 	}
 
@@ -90,26 +97,23 @@ public class DataChunk implements Comparable<DataChunk> {
 	/*
 	 * ��ȡ��һ����Χ��ص�����chunk
 	 */
-	public Set<DataChunk> getAdjacentChunks(int[] start, int[] off) {
-		Set<DataChunk> chunks = new TreeSet<DataChunk>();
-		Set<DataChunk> pass = new TreeSet<DataChunk>();
-		Deque<DataChunk> cque = new ArrayDeque<DataChunk>();
-
-		long startPos = 0;
-		long rsize = 1;
-		int[] step = this.getChunkSize();
-		long l = 1;
-		for (int i = step.length -1 ; i >= 0; i--) {
-			
+	public Set<DataChunk> getAdjacentChunks(int[] start, int[] off) 
+	{
+		long startPos = 0, rsize = 1,l = 1;
+		for (int i = start.length -1 ; i >= 0; i--)
+		{
 			startPos += l*start[i] ;
 			l*= this.vsize[i];
 			rsize *= off[i];
 		}
-
 		if (rsize == 0) { 
 			return null;
 		}
-
+		
+		Set<DataChunk> chunks = new TreeSet<DataChunk>();
+		Set<DataChunk> pass = new TreeSet<DataChunk>();
+		Deque<DataChunk> cque = new ArrayDeque<DataChunk>();
+		
 		DataChunk chunk = new DataChunk(this.vsize, this.chunkStep);
 		chunk.getChunkByOff(startPos);
 
@@ -125,7 +129,7 @@ public class DataChunk implements Comparable<DataChunk> {
 				tmp = chunk.moveUp(i);
 				if (tmp != null && !pass.contains(tmp))
 				{
-					if(tmp.intersect(start, off)) {
+					if(tmp.isOverlaped(start, off)) {
 						cque.addLast(tmp);
 						chunks.add(tmp);
 					}
@@ -135,7 +139,7 @@ public class DataChunk implements Comparable<DataChunk> {
 				tmp = chunk.moveDown(i);
 				if (tmp != null && !pass.contains(tmp))
 				{
-					if(tmp.intersect(start, off)) {
+					if(tmp.isOverlaped(start, off)) {
 						cque.addLast(tmp);
 						chunks.add(tmp);
 					}
@@ -144,7 +148,6 @@ public class DataChunk implements Comparable<DataChunk> {
 			}
 			
 		}
-
 		return chunks;
 	}
 
@@ -210,21 +213,7 @@ public class DataChunk implements Comparable<DataChunk> {
 		return inChunk;
 	}
 
-	/*
-	 * ��i��chunk����ʼλ����partition�е�λ��
-	 */
-	public int[] getIthChunkPos(int num) {
-		//TODO
-		int[] rstart = new int[this.chunkStep.length];
-		rstart[0] = this.chunkStep[0] * num;
-		int i = 0;
-		while (i < this.chunkStep.length - 1 && rstart[i] >= this.vsize[i]) {
-			rstart[i + 1] = this.chunkStep[i + 1] * rstart[i] / this.vsize[i];
-			rstart[i] = rstart[i] % this.vsize[i];
-			i++;
-		}
-		return rstart;
-	}
+
 
 	public int getOffset() {
 		return this.getChunkOffset() + this.inChunk;
@@ -286,7 +275,7 @@ public class DataChunk implements Comparable<DataChunk> {
 	/*
 	 * �Ƿ���һ���������ཻ
 	 */
-	public boolean intersect(int[] start, int[] off) {
+	private boolean isOverlaped(int[] start, int[] off) {
 		int len = this.start.length;
 		boolean isIntersect = true;
 		for (int i = 0; i < len; i++) {
@@ -301,7 +290,7 @@ public class DataChunk implements Comparable<DataChunk> {
 	/*
 	 * ����chunk�Ƿ��ཻ
 	 */
-	public boolean interSect(DataChunk chunk) {
+	/*public boolean isOverlaped(DataChunk chunk) {
 		int len = this.start.length;
 		for (int i = 0; i < len; i++) {
 			if (!(this.start[i] >= (chunk.getStart()[i] + chunk.getChunkStep()[i]) || this.start[i]
@@ -311,8 +300,8 @@ public class DataChunk implements Comparable<DataChunk> {
 		}
 		return false;
 	}
-
-	public DataChunk moveDown(int i) {
+*/
+	private DataChunk moveDown(int i) {
 		if (this.start[i] - this.chunkStep[i] < 0)
 			return null;
 		DataChunk chunk = new DataChunk(this.vsize, this.chunkStep);
@@ -325,7 +314,7 @@ public class DataChunk implements Comparable<DataChunk> {
 		return chunk;
 	}
 
-	public DataChunk moveUp(int i) {
+	private DataChunk moveUp(int i) {
 		if (this.start[i] + this.chunkStep[i] >= this.vsize[i])
 			return null;
 		DataChunk chunk = new DataChunk(this.vsize, this.chunkStep);
@@ -393,7 +382,6 @@ public class DataChunk implements Comparable<DataChunk> {
 
 	public void setChunkStep(int step, int i) {
 		this.chunkStep[i] = step;
-
 	}
 
 	public void setChunkStep(int[] steps) {

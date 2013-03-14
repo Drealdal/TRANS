@@ -15,10 +15,9 @@ public class OptimusArray implements Writable{
 	String name = null;
 	float devalue = 0;
 	boolean deleted = false;
+	OptimusShape overlap = new OptimusShape();
 
 	public OptimusArray()	{}
-	
-	
 	
 	public OptimusArray(ZoneID zid,ArrayID id,String name,float devalue)
 	{
@@ -38,16 +37,17 @@ public class OptimusArray implements Writable{
 		this.deleted = arg0.readBoolean();
 		this.devalue = arg0.readFloat();
 		this.name = WritableUtils.readString(arg0);
+		this.overlap.readFields(arg0);
+		
 	}
 	@Override
 	public void write(DataOutput arg0) throws IOException {
-		
 		this.id.write(arg0);
 		this.zid.write(arg0);
 		arg0.writeBoolean(this.deleted);
 		arg0.writeFloat(this.devalue);
 		WritableUtils.writeString(arg0, this.name);
-		
+		this.overlap.write(arg0);
 	}
 
 
@@ -89,11 +89,13 @@ public class OptimusArray implements Writable{
 	public String getName() {
 		return name;
 	}
-
-
-
+	
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public void setOverlap(OptimusShape overlap) {
+		this.overlap = overlap;
 	}
 
 	
