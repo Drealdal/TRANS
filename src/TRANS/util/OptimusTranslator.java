@@ -60,17 +60,10 @@ public class OptimusTranslator extends Thread {
 			for(int i = 0; i < tdouble.length; i++)
 			{
 	
-				if(translated == 16160 )
-				{
-					System.out.print("Test");
-				}
+			
 				src.getChunkByOff(translated++);
 				dst.getChunkByOff(ChunkTranslater.offTranslate(src));
-				if(dst.getOffset() == 16928)
-				{
-					System.out.println(src.toString());
-					System.out.println(dst.toString());
-				}
+			
 				data[dst.getOffset()] = tdouble[i];
 			}
 		}

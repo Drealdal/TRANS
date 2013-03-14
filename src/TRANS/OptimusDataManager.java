@@ -31,6 +31,7 @@ import TRANS.util.ByteWriter;
 import TRANS.util.Host;
 import TRANS.util.OptimusConfiguration;
 import TRANS.util.OptimusData;
+import TRANS.util.TRANSDataIterator;
 
 /*
  * serve data to the client or the other component of the cluster
@@ -140,14 +141,25 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 		Set<DataChunk> chunks = chunk.getAdjacentChunks(start, off);
 
 		double[] rdata = new double[rsize];
+		TRANSDataIterator ritr = new TRANSDataIterator(rdata, start,off);
+		
 		p.open();
 		for (DataChunk c : chunks) {
+			System.out.println(c);
 			double[] data = p.read(c);
 			int[] nstart = new int[start.length];
 			int[] noff = new int[start.length];
 
 			int[] cstart = c.getStart();
 			int[] coff = c.getChunkSize();
+			TRANSDataIterator citr = new TRANSDataIterator(data,cstart,coff);
+			ritr.init(cstart, coff);
+			citr.init(start, off);
+			while(citr.next()&&ritr.next())
+			{
+				ritr.set(citr.get());
+			}
+			
 			for (int i = 0; i < start.length; i++) {
 				nstart[i] = start[i] > cstart[i] ? start[i] : cstart[i];
 				noff[i] = start[i] + off[i] < cstart[i] + coff[i] ? start[i]

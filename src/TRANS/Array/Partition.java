@@ -166,8 +166,8 @@ public class Partition implements Writable, Runnable {
 		DataChunk schunk = new DataChunk(psize.getShape(),
 				src.getShape());
 
-		System.out.println(schunk.toString());
-		System.out.println(dchunk.toString());
+//		System.out.println(schunk.toString());
+//		System.out.println(dchunk.toString());
 		
 		int[] vsize = psize.getShape();
 		int len = 1;
@@ -263,7 +263,7 @@ public class Partition implements Writable, Runnable {
 		
 		if (schunk.ShapeEquals(dchunk)) {
 			len *= 8;
-			this.writeMeta(nhostOut);
+			//this.writeMeta(nhostOut);
 			byte[] tmp = new byte[4096];
 			while (len > 0) {
 				int tlen = cin.read(tmp);

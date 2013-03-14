@@ -1,5 +1,6 @@
 package TRANS.util;
 
+import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
@@ -8,9 +9,9 @@ public class OptimusDouble2ByteStreamWriter implements ByteWriter {
 	public int size;
 	byte[] data;
 	int cur;
-	DataOutputStream dataout = null;
+	DataOutput dataout = null;
 
-	public OptimusDouble2ByteStreamWriter(int size, DataOutputStream out) {
+	public OptimusDouble2ByteStreamWriter(int size, DataOutput out) {
 		this.size = size;
 		data = new byte[this.size * 8];
 		this.dataout = out;

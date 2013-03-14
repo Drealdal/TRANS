@@ -1,5 +1,6 @@
 package TRANS.util;
 
+import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -13,6 +14,7 @@ public class Byte2DoubleReader implements ByteReader {
 	DataInputStream  datain = null;
 	RandomAccessFile rin = null;
 	DataOutputStream out = null;
+	public Byte2DoubleReader(){};
 	public Byte2DoubleReader(int size, DataOutputStream out,DataInputStream in)
 	{
 		this.size = size;
@@ -21,6 +23,14 @@ public class Byte2DoubleReader implements ByteReader {
 		this.out = out;
 	}
 	
+	public byte[] getData() {
+		return data;
+	}
+
+	public void setData(byte[] data) {
+		this.data = data;
+	}
+
 	public Byte2DoubleReader(int size, DataOutputStream out,RandomAccessFile in)
 	{
 		this.size = size;
@@ -59,6 +69,7 @@ public class Byte2DoubleReader implements ByteReader {
 			r = rin.read(data, this.cur, rlen );
 		}else{
 			r = datain.read(data, this.cur, rlen );
+			
 		}
 		if(out != null)
 		{
@@ -119,6 +130,11 @@ public class Byte2DoubleReader implements ByteReader {
 	    	l&=0xffffffffffffffl;
 	    	l|=((long)data[index++]<<56);
 	    	ddata [i] = Double.longBitsToDouble(l);
+		}
+		int start = this.cur - this.cur%8;
+		for( int i = 0; i < this.cur%8; i++)
+		{
+			this.data[i] = this.data[start+i];
 		}
 		this.cur %= 8;
 		return ddata;

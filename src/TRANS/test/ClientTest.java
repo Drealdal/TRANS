@@ -88,14 +88,14 @@ public class ClientTest {
 	public static void main(String[] args) throws IOException, WrongArgumentException, JDOMException, InterruptedException {
 		// TODO Auto-generated method stub
 		int [] srcStart = {0,0,0};
-		int [] vsize = {900, 247, 20};
-		int [] shape = {90,50,4};
-		int [] srcShape = {90,1,1};// �д洢
-		int [] dstShape = {90,1,1};
-		int [] dstShape2 = {9,5,4};
+		int [] vsize = {900,247, 20};
+		int [] shape = {90,50,20};
+		int [] srcShape = {9,1,1};// �д洢
+		int [] dstShape = {9,5,4};
+		int [] dstShape2 = {9,1,1};
 		Vector<int []>strategy = new Vector<int []>();
 		strategy.add(dstShape2);
-		//strategy.add(dstShape);
+		strategy.add(dstShape);
 		
 		strategy.add(srcShape);
 		String name = "testArray";
@@ -112,7 +112,7 @@ public class ClientTest {
 			return;
 		}
 		long btime = System.currentTimeMillis();
-		ArrayCreater creater = new ArrayCreater(conf,zone,srcShape,"test2",1,0);
+		ArrayCreater creater = new ArrayCreater(conf,zone,srcShape,"test3",1,0);
 		creater.create();
 		
 		DataChunk chunk = new DataChunk(vsize,shape);
