@@ -10,6 +10,10 @@ import org.apache.hadoop.io.WritableUtils;
 
 public class OptimusArray implements Writable{
 
+	public OptimusShape getOverlap() {
+		return overlap;
+	}
+
 	ZoneID zid = null;
 	ArrayID id = null;
 	String name = null;

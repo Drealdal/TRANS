@@ -37,6 +37,7 @@ public class DataChunk implements Comparable<DataChunk> {
 		{
 			start[i] = tstart[i];
 		}
+		this.overlap = chunk.getOverlap();
 		this.chunkNum = chunk.getChunkNum();
 	}
 	public DataChunk(int[] vsize, int[] chunkStep) {
@@ -49,6 +50,7 @@ public class DataChunk implements Comparable<DataChunk> {
 		}
 	}
 
+
 	@Override
 	public String toString() {
 		return "DataChunk [chunkNum=" + chunkNum + ", chunkNumMove="
@@ -56,7 +58,8 @@ public class DataChunk implements Comparable<DataChunk> {
 				+ Arrays.toString(chunkStep) + ", inChunk=" + inChunk
 				+ ", size=" + size + ", start=" + Arrays.toString(start)
 				+ ", vsize=" + Arrays.toString(vsize) + ", chunkSize="
-				+ Arrays.toString(chunkSize) + ", offset=" + offset + "]";
+				+ Arrays.toString(chunkSize) + ", overlap="
+				+ Arrays.toString(overlap) + ", offset=" + offset + "]";
 	}
 	@Override
 	public int compareTo(DataChunk chunk) {
@@ -201,10 +204,22 @@ public class DataChunk implements Comparable<DataChunk> {
 	}
 	public int[] getChunkSize()
 	{
+		
 		int [] csize = new int[this.vsize.length];
-		for(int i = 0 ; i < vsize.length; i++)
+		if( this.overlap == null)
 		{
-			csize[i] = (vsize[i] - start[i]) > this.chunkStep[i] ? this.chunkStep[i]:(vsize[i] - start[i]);
+			for(int i = 0 ; i < vsize.length; i++)
+			{
+				csize[i] = (vsize[i] - start[i]) > this.chunkStep[i] ? this.chunkStep[i]:(vsize[i] - start[i]);
+			}
+		}else{
+			int s,o;
+			for(int i = 0 ; i < vsize.length; i++)
+			{
+				s = start[i] - overlap[i] > 0 ? start[i] - overlap[i]:0;
+				o = chunkStep[i] + 2*overlap[i];
+				csize[i] = (vsize[i] - s) > o ? o: vsize[i] - s;
+			}
 		}
 		return csize;
 	}
@@ -212,18 +227,24 @@ public class DataChunk implements Comparable<DataChunk> {
 	public int getInChunk() {
 		return inChunk;
 	}
-
-
-
 	public int getOffset() {
 		return this.getChunkOffset() + this.inChunk;
 	}
 
 	public int getSize() {
 		int size = 1;
+		if(overlap == null){
 		for(int i = 0 ; i < vsize.length; i++)
 		{
 			size *= (vsize[i] - start[i]) > this.chunkStep[i] ? this.chunkStep[i]:(vsize[i] - start[i]);
+		}}else{
+			int s,o;
+			for(int i = 0 ; i < vsize.length; i++)
+			{
+				s = start[i] - overlap[i] > 0 ? start[i] - overlap[i]:0;
+				o = chunkStep[i] + 2*overlap[i];
+				size *= (vsize[i] - s) > o ? o: vsize[i] - s;
+			}
 		}
 		return size;
 	}
@@ -301,7 +322,7 @@ public class DataChunk implements Comparable<DataChunk> {
 		return false;
 	}
 */
-	private DataChunk moveDown(int i) {
+	public DataChunk moveDown(int i) {
 		if (this.start[i] - this.chunkStep[i] < 0)
 			return null;
 		DataChunk chunk = new DataChunk(this.vsize, this.chunkStep);
@@ -311,10 +332,11 @@ public class DataChunk implements Comparable<DataChunk> {
 		}
 		chunk.setStart(this.start[i] - this.chunkStep[i], i);
 		chunk.setChunkNum(this.chunkNum - this.getChunkNumMove(i));
+		chunk.setOverlap(overlap);
 		return chunk;
 	}
 
-	private DataChunk moveUp(int i) {
+	public DataChunk moveUp(int i) {
 		if (this.start[i] + this.chunkStep[i] >= this.vsize[i])
 			return null;
 		DataChunk chunk = new DataChunk(this.vsize, this.chunkStep);
@@ -324,6 +346,7 @@ public class DataChunk implements Comparable<DataChunk> {
 		}
 		chunk.setStart(this.start[i] + this.chunkStep[i], i);
 		chunk.setChunkNum(this.chunkNum + this.getChunkNumMove(i));
+		chunk.setOverlap(overlap);
 		return chunk;
 	}
 
@@ -425,7 +448,6 @@ public class DataChunk implements Comparable<DataChunk> {
 	public int getChunkOffset()
 	{
 		if(this.offset != -1) return this.offset;
-		
 		int []starts = new int[start.length];
 		int []vsizes = new int[vsize.length];
 		int []cizes = new int[start.length];
@@ -436,10 +458,8 @@ public class DataChunk implements Comparable<DataChunk> {
 			cizes[i] = this.getChunkSize()[start.length - 1 - i];
 
 		}
-		
 		return getOffsetOfChunk(vsizes,cizes,starts);
 	}
-	
 	static int getOffsetOfChunk(int []vsize, int[] csize, int []start)
 	{
 		int [] volume = new int [vsize.length];
@@ -462,4 +482,5 @@ public class DataChunk implements Comparable<DataChunk> {
 		}
 		return offset;
 	}
+	
 }

@@ -11,6 +11,22 @@ import org.apache.hadoop.io.Writable;
 import TRANS.Array.OptimusShape;
 
 public class TRANSDataIterator implements Writable{
+	public int[] getStart() {
+		return start;
+	}
+
+	public void setStart(int[] start) {
+		this.start = start;
+	}
+
+	public int[] getShape() {
+		return shape;
+	}
+
+	public void setShape(int[] shape) {
+		this.shape = shape;
+	}
+
 	//data to read
 	double []data = null;
 	//the description of the data
@@ -20,7 +36,8 @@ public class TRANSDataIterator implements Writable{
 	int [] rstart = null;
 	int [] roff = null;
 
-	
+	int size = 0;
+	int volume = 0;
 	int[] fjump = null;
 	int fpos = 0;
 	private int[] itr;
@@ -31,6 +48,9 @@ public class TRANSDataIterator implements Writable{
 		this.data = data;
 		this.shape = shape;
 		this.start = start;		
+		volume = 1;
+		for(int i = 0 ; i < shape.length; i++)
+			volume *= shape[i];
 	}
 	public void init(int[] s, int[] o)
 	{
@@ -87,6 +107,11 @@ public class TRANSDataIterator implements Writable{
 	}
 	public void set(double d)
 	{
+		this.data[fpos+itr[itr.length - 1]] = d;
+	}
+	public void add(double d)
+	{
+		this.size++;
 		this.data[fpos+itr[itr.length - 1]] = d;
 	}
 	@Override
@@ -148,5 +173,9 @@ public class TRANSDataIterator implements Writable{
 
 	public void setData(double[] data) {
 		this.data = data;
+	}
+	public boolean isFull()
+	{
+		return this.size >= this.volume;
 	}
 }

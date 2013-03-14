@@ -25,6 +25,49 @@ import TRANS.util.OptimusTranslator;
 public class Partition implements Writable, Runnable {
 	static Log log = OptimusNode.LOG;
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((arrayid == null) ? 0 : arrayid.hashCode());
+		result = prime * result + ((pid == null) ? 0 : pid.hashCode());
+		result = prime * result + ((rid == null) ? 0 : rid.hashCode());
+		result = prime * result + ((zid == null) ? 0 : zid.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Partition other = (Partition) obj;
+		if (arrayid == null) {
+			if (other.arrayid != null)
+				return false;
+		} else if (!arrayid.equals(other.arrayid))
+			return false;
+		if (pid == null) {
+			if (other.pid != null)
+				return false;
+		} else if (!pid.equals(other.pid))
+			return false;
+		if (rid == null) {
+			if (other.rid != null)
+				return false;
+		} else if (!rid.equals(other.rid))
+			return false;
+		if (zid == null) {
+			if (other.zid != null)
+				return false;
+		} else if (!zid.equals(other.zid))
+			return false;
+		return true;
+	}
+
 	/**
 	 * @param args
 	 */
@@ -483,7 +526,7 @@ public class Partition implements Writable, Runnable {
 		arrayid.write(fout);
 		pid.write(fout);
 		this.rid.write(fout);
-
+		
 	}
 
 }

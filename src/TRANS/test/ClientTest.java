@@ -88,11 +88,12 @@ public class ClientTest {
 	public static void main(String[] args) throws IOException, WrongArgumentException, JDOMException, InterruptedException {
 		// TODO Auto-generated method stub
 		int [] srcStart = {0,0,0};
-		int [] vsize = {900,247, 20};
-		int [] shape = {90,50,20};
-		int [] srcShape = {9,1,1};// �д洢
-		int [] dstShape = {9,5,4};
-		int [] dstShape2 = {9,1,1};
+		int [] vsize = {8,8};
+		int [] shape = {2,2};
+		int [] srcShape = {2,1};// �д洢
+		int [] dstShape = {2,2};
+		int [] dstShape2 = {1,2};
+		int [] overlap = {2,2}; 
 		Vector<int []>strategy = new Vector<int []>();
 		strategy.add(dstShape2);
 		strategy.add(dstShape);
@@ -129,6 +130,7 @@ public class ClientTest {
 		//			srcData,srcStart, dstData, chunk.getStart());
 			//creater.create();
 			System.out.println(chunk);
+			chunk.setOverlap(overlap);
 			creater.createPartition(scanner,chunk,"testArray");
 		}while(chunk.nextChunk());
 		creater.close(1000, TimeUnit.SECONDS);

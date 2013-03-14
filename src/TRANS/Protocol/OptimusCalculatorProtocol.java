@@ -16,4 +16,5 @@ public interface OptimusCalculatorProtocol extends VersionedProtocol {
 	static public long versionID = 1; 
 	public Optimus1Ddata FindMaxMin(ArrayID aid, PID pid,OptimusShape pshape, OptimusShape start, OptimusShape off)throws Exception;
 	public BooleanWritable JoinArray(Partition array1, Partition array2,Partition array3, OptimusCalculator c)throws IOException;
+	 
 }

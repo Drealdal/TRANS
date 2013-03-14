@@ -52,6 +52,7 @@ public class PartitionReader {
 			throw new WrongArgumentException("ArrayName","Not find array");
 		}
 		DataChunk chunk = new DataChunk(zone.getSize().getShape(),zone.getPstep().getShape());
+		chunk.setOverlap(array.getOverlap().getShape());
 		Set<DataChunk> chunks = chunk.getAdjacentChunks(start, off);
 		int rsize = 1;
 		for(int i = 0 ; i < start.length; i++)

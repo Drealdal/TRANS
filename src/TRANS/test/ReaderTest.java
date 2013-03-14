@@ -23,8 +23,8 @@ public class ReaderTest {
 		OptimusConfiguration conf = new OptimusConfiguration("./conf");
 		PartitionReader reader = new PartitionReader(conf);
 		
-		int [] start = {0,5,0};
-		int [] off = {900,111,11};
+		int [] start = {0,0};
+		int [] off = {2,2};
 		ZoneClient zclient = new ZoneClient(conf);
 		OptimusZone zone = zclient.openZone("test");
 		if(zone == null)
