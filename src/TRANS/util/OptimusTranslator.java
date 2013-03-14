@@ -38,7 +38,6 @@ public class OptimusTranslator extends Thread {
 		}
 			w.release();
 	}
-
 	@Override
 	public void run() {
 		int translated = 0;
@@ -59,11 +58,8 @@ public class OptimusTranslator extends Thread {
 			
 			for(int i = 0; i < tdouble.length; i++)
 			{
-	
-			
 				src.getChunkByOff(translated++);
 				dst.getChunkByOff(ChunkTranslater.offTranslate(src));
-			
 				data[dst.getOffset()] = tdouble[i];
 			}
 		}

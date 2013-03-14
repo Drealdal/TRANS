@@ -12,4 +12,9 @@
 		<name>Optimus.rmanager.port</name>
 		<value>8003</value>
 	</property>
+	<property>
+		<name>Optimus.datnode.thread</name>
+		<value>3</value>
+	</property>
+	
 </Configuration>

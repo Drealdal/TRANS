@@ -204,8 +204,6 @@ public class Partition implements Writable, Runnable {
 				}
 				trans.write(tdouble);
 				fnum+=tdouble.length;
-				
-			
 			}
 			
 			

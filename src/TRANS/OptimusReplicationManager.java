@@ -135,11 +135,11 @@ public class OptimusReplicationManager extends Thread  {
 	 {
 		this.register();
 		socket = new ServerSocket(this.replicatePort);
-		 
+		
 		Timer t = new Timer();
 		t.schedule(new OptimusTimeRunner(this), 0, this.conf.getInt("Optimus.hearbeat.time", OptimusDefault.HEARTBEAT_TIME)*60*1000);
-		ExecutorService  exe =   Executors.newCachedThreadPool();
-		
+		//ExecutorService  exe =   Executors.newCachedThreadPool();
+		ExecutorService exe = Executors.newFixedThreadPool(this.conf.getInt("Optimus.datanode.thread", 3)); 
 		while(true)
 		 {
 			 Socket sin = socket.accept();
