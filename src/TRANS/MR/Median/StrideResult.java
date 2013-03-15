@@ -42,6 +42,12 @@ public class StrideResult extends TRANSDataIterator {
 		super(data,start,shape);
 	}
 	class PresultKey implements Writable{
+		@Override
+		public String toString() {
+			return "PresultKey [start=" + Arrays.toString(start) + ", shape="
+					+ Arrays.toString(shape) + "]";
+		}
+
 		protected int[] start = null;
 		protected int[] shape = null;
 		public PresultKey(){};

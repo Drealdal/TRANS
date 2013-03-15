@@ -511,7 +511,7 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 			{
 				
 				StrideResult tmp = (StrideResult)i.getValue();
-				tmp.addResult(cc.getStart(),cc.getChunkSize());	
+				tmp.addResult(it.getStart(),it.getShape());	
 				if(!tmp.init(it.getStart(), it.getShape()))
 				{
 					continue;
