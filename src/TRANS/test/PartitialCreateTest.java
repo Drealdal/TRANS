@@ -54,7 +54,7 @@ public class PartitialCreateTest {
 			System.out.println("Unknown error");
 			return;
 		}
-		long btime = System.currentTimeMillis();
+
 		ArrayCreater creater = new ArrayCreater(conf,zone,srcShape,arrayName,1,0);
 		creater.create();
 		

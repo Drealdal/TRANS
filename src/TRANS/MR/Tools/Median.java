@@ -1,11 +1,5 @@
 package TRANS.MR.Tools;
 
-import TRANS.MR.Average.Mapper.*;
-import TRANS.MR.Average.Reducer.*;
-import TRANS.MR.Combiner.AverageCombiner;
-import java.io.IOException;
-import java.util.StringTokenizer;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -16,23 +10,20 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.util.GenericOptionsParser;
 
-import TRANS.Data.Optimus1Ddata;
-import TRANS.MR.TRANSInputFormat;
+import TRANS.MR.Average.Mapper.AverageMapper;
+import TRANS.MR.Average.Reducer.AverageReducer;
+import TRANS.MR.Combiner.AverageCombiner;
+import TRANS.MR.Median.StrideResult;
+import TRANS.MR.Median.TRANSMedianInputFormat;
 import TRANS.MR.io.AverageResult;
 
-public class Average {
+public class Median {
 
 	public static void main(String[] args) throws Exception {
     Configuration conf = new Configuration();
-    String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
     
     
 	CommandLineParser parser = new PosixParser();
@@ -92,25 +83,18 @@ public class Average {
     conf.set("TRANS.range.start",start);
     conf.set("TRANS.range.offset",off);
     Job job = null;
-    if(!cmd.hasOption("push"))
-    {
-    	job = new Job(conf, "Average");
-    	
-    	job.setInputFormatClass(TRANS.MR.TRANSNonPushInputFormat.class);
-    	job.setMapperClass(AverageMapper.class);
-    }else{
-    	job = new Job(conf,"Average Push");
-    	job.setInputFormatClass(TRANS.MR.TRANSPushInputFormat.class);
-    	job.setMapperClass(TRANS.MR.Average.Mapper.AveragePushDownMapper.class);
-    }
-    job.setJarByClass(Average.class);
+ 
+    job = new Job(conf, "Median");
+    job.setInputFormatClass(TRANSMedianInputFormat.class);
+    job.setJarByClass(Median.class);
 
-	job.setCombinerClass(AverageCombiner.class);
-	job.setReducerClass(AverageReducer.class);
-    job.setMapOutputKeyClass(LongWritable.class);
-    job.setMapOutputValueClass(AverageResult.class);
+    job.setMapperClass(TRANS.MR.Median.Mapper.MedianMapper.class);
+	job.setReducerClass(TRANS.MR.Median.Reducer.MedianReducer.class);
+	
+    job.setMapOutputKeyClass(IntWritable.class);
+    job.setMapOutputValueClass(StrideResult.class);
     
-    job.setOutputKeyClass(LongWritable.class);
+    job.setOutputKeyClass(IntWritable.class);
     job.setOutputValueClass(DoubleWritable.class);
     //    FileInputFormat.addInputPath(job, new Path(otherArgs[0]));
     FileOutputFormat.setOutputPath(job, new Path(out));

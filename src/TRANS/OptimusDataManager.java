@@ -5,10 +5,13 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.ArrayWritable;
 import org.apache.hadoop.io.BooleanWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.ipc.RPC;
@@ -25,6 +28,7 @@ import TRANS.Array.RID;
 import TRANS.Calculator.OptimusCalculator;
 import TRANS.Client.creater.PartitionStreamCreater;
 import TRANS.Data.Optimus1Ddata;
+import TRANS.MR.Median.StrideResult;
 import TRANS.MR.io.AverageResult;
 import TRANS.Protocol.OptimusCalculatorProtocol;
 import TRANS.Protocol.OptimusDataProtocol;
@@ -432,6 +436,82 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 		}
 		return new BooleanWritable(true);
 		
+	}
+
+	@Override
+	public ArrayWritable readStride(Partition p,OptimusShape pshape, OptimusShape start,
+			OptimusShape off,OptimusShape stride) throws IOException {
+
+		OptimusZone zone = this.rmanger.getZone(p.getZid());
+		Vector<int[]> shapes = zone.getStrategy().getShapes();
+		
+		// start 是range的开始，off 是range的大小， stride是range的划分
+		DataChunk chunk = new DataChunk(start.getShape(), off.getShape());
+		
+		
+		int[] asize = zone.getSize().getShape();
+		int[] pstep = zone.getPstep().getShape();
+		// 没有考虑overlap
+		DataChunk partition = new DataChunk(asize, pstep);
+		int pnum = p.getPid().getId();
+		for (int i = 0; i < asize.length; i++) {
+			while (partition.getChunkNum() < pnum) {
+				partition = partition.moveUp(i);
+			}
+			if (partition.getChunkNum() == pnum) {
+				break;
+			} else {
+				partition.moveDown(i);
+			}
+		}
+		//所有overlap的stride及其编号
+		int []pstart = partition.getStart();
+		Set<DataChunk> chunks = chunk.getAdjacentChunks(pstart, partition.getChunkSize());
+		Map<Integer, StrideResult> itrs = new HashMap<Integer,StrideResult>();
+		for(DataChunk c:chunks)
+		{
+			double []data = new double[c.getSize()];
+			StrideResult itr = new StrideResult(data,c.getStart(),c.getChunkSize());
+			itrs.put(c.getChunkNum(), itr);
+		}
+		DataChunk c = new DataChunk(pshape.getShape(),  shapes.get(p.getZid().getId()));
+		chunks = c.getAdjacentChunks(start.getShape(), off.getShape());
+		p.setRmanager(this.rmanger);
+		p.open();
+		int []rangeStart = start.getShape();
+		for(DataChunk cc:chunks)
+		{
+			double [] data = p.read(cc);
+			int [] startInRange = new int [asize.length];
+			int [] cstart = cc.getStart();
+			for(int i = 0 ; i < asize.length; i++)
+			{
+				startInRange[i] = cstart[i] + pstart[i] - rangeStart[i];
+			}
+			
+			StrideResult it = new StrideResult(data,startInRange,cc.getChunkSize());
+			for(Map.Entry i: itrs.entrySet())
+			{
+				
+				StrideResult tmp = (StrideResult)i.getValue();
+				tmp.addResult(cc.getStart(),cc.getChunkSize());
+				tmp.init(it.getStart(), it.getShape());
+				it.init(tmp.getStart(), tmp.getShape());
+				
+				while(it.next()&&tmp.next())
+				{
+					tmp.add(it.get());
+				}
+			}
+		}
+		StrideResult [] ret = new StrideResult[itrs.size()];
+		int s = 0;
+		for(Map.Entry i: itrs.entrySet())
+		{
+			StrideResult r = (StrideResult)i.getValue();
+			r.setId((Integer)i.getKey());
+		}
+		return new ArrayWritable(StrideResult.class,ret);
 	}
 
 }

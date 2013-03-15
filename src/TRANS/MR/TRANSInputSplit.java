@@ -53,8 +53,16 @@ public class TRANSInputSplit extends InputSplit implements Writable{
 	private PID pid=null;
 	private OptimusZone zone = null;
 	private OptimusArray array = null;
-	private OptimusShape start = null;
+	
+	private OptimusShape start = null; // start of the read range in the partition
 	private OptimusShape pshape = null;// shape of the partition
+	private OptimusShape stride = null;
+	public OptimusShape getStride() {
+		return stride;
+	}
+	public void setStride(OptimusShape stride) {
+		this.stride = stride;
+	}
 	public OptimusShape getPshape() {
 		return pshape;
 	}
@@ -62,7 +70,7 @@ public class TRANSInputSplit extends InputSplit implements Writable{
 		this.pshape = pshape;
 	}
 
-	private OptimusShape off = null;
+	private OptimusShape off = null; // read shape
 	private String confDir = null;
 	private TransHostList hosts = new TransHostList();
 	public TRANSInputSplit(){}
@@ -130,6 +138,8 @@ public class TRANSInputSplit extends InputSplit implements Writable{
 		this.hosts.readFields(arg0);
 		this.pshape = new OptimusShape();
 		this.pshape.readFields(arg0);
+		this.stride = new OptimusShape();
+		this.stride.readFields(arg0);
 	}
 
 	@Override
@@ -143,6 +153,7 @@ public class TRANSInputSplit extends InputSplit implements Writable{
 		this.off.write(arg0);
 		hosts.write(arg0);
 		this.pshape.write(arg0);
+		this.stride.write(arg0);
 	}
 
 }

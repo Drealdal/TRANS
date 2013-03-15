@@ -1,4 +1,4 @@
-package TRANS.MR.Reducer;
+package TRANS.MR.Average.Reducer;
 
 import java.io.IOException;
 

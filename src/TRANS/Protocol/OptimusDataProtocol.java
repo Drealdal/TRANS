@@ -2,6 +2,7 @@ package TRANS.Protocol;
 
 import java.io.IOException;
 
+import org.apache.hadoop.io.ArrayWritable;
 import org.apache.hadoop.io.BooleanWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.ipc.VersionedProtocol;
@@ -32,4 +33,7 @@ public interface OptimusDataProtocol extends VersionedProtocol {
 	 *rnum the identify of the replica
 	 * */
 	public BooleanWritable putPartitionData(Partition p, TRANSDataIterator data) throws IOException;
+	public ArrayWritable  readStride(Partition p, OptimusShape pshape,OptimusShape start, 
+			OptimusShape off,OptimusShape stride)throws IOException;
+	 
 }

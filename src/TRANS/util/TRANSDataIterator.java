@@ -11,6 +11,14 @@ import org.apache.hadoop.io.Writable;
 import TRANS.Array.OptimusShape;
 
 public class TRANSDataIterator implements Writable{
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
+
 	public int[] getStart() {
 		return start;
 	}
@@ -114,6 +122,7 @@ public class TRANSDataIterator implements Writable{
 		this.size++;
 		this.data[fpos+itr[itr.length - 1]] = d;
 	}
+
 	@Override
 	public void write(DataOutput out) throws IOException {
 		// TODO Auto-generated method stub

@@ -1,4 +1,4 @@
-package TRANS.MR.Mapper;
+package TRANS.MR.Average.Mapper;
 
 import java.io.IOException;
 
