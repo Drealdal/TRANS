@@ -1,6 +1,7 @@
 package TRANS.MR.Median;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -67,6 +68,7 @@ public class TRANSMedianInputFormat extends FileInputFormat<IntWritable,StrideRe
 			opoint[i] = Integer.parseInt(offs[i]);
 			stridePoint[i] = Integer.parseInt(strides[i]);
 		}
+		
 		ZoneClient zclient = null;
 		try {
 			zclient = new ZoneClient(new OptimusConfiguration(confDir));
@@ -86,10 +88,14 @@ public class TRANSMedianInputFormat extends FileInputFormat<IntWritable,StrideRe
 		}
 		DataChunk chunk = new DataChunk(zone.getSize().getShape(),zone.getPstep().getShape());
 		Set<DataChunk> chunks = chunk.getAdjacentChunks(spoint, opoint);
+		System.out.println("After adjacent!!");
 		OptimusCatalogProtocol ci = zclient.getCi();
 		OptimusArray array = null;
 		try {
+			System.out.println("Before opening Array!");
 			array = ci.openArray(zone.getId(),new Text(aname));
+			System.out.println("After opening Array!");
+			
 		} catch (WrongArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -100,6 +106,7 @@ public class TRANSMedianInputFormat extends FileInputFormat<IntWritable,StrideRe
 		System.out.println("Querying:" + zone.getName()+"."+array.getName());
 		for(DataChunk c: chunks)
 		{
+			System.out.println(c);
 			int [] nstart = new int [spoint.length];
 			int [] noff = new int [spoint.length];
 			// start in the partition
@@ -130,7 +137,9 @@ public class TRANSMedianInputFormat extends FileInputFormat<IntWritable,StrideRe
 			}
 			TRANSInputSplit split = new TRANSInputSplit(zone,array,p,new OptimusShape(spoint), new OptimusShape(opoint),confDir);
 			split.setHosts(l);
+			split.setStride(new OptimusShape(stridePoint));
 			split.setPshape(new OptimusShape(c.getChunkSize()));
+			System.out.println(split);
 			splits.add(split);
 		}
 		return splits;

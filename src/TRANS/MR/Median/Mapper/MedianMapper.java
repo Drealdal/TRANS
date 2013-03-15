@@ -30,7 +30,7 @@ public class MedianMapper extends Mapper<IntWritable, StrideResult, IntWritable,
   @Override
 protected void setup(Context context) throws IOException, InterruptedException {
 	// TODO Auto-generated method stub
-		JobConf conf = (JobConf)context.getConfiguration();
+	/*	JobConf conf = (JobConf)context.getConfiguration();
 		String ozname = conf.get("TRANS.output.zone.name");
 		String oaname = conf.get("TRANS.output.zone.name");
 		String confDir= conf.get("TRANS.conf.dir");
@@ -61,7 +61,7 @@ protected void setup(Context context) throws IOException, InterruptedException {
 			e.printStackTrace();
 			System.exit(-1);
 		}
-	  chunk = new DataChunk(zone.getSize().getShape(),zone.getPstep().getShape());
+	  chunk = new DataChunk(zone.getSize().getShape(),zone.getPstep().getShape());*/
 	  super.setup(context);
 }
 
@@ -86,13 +86,14 @@ protected void cleanup(Context context) throws IOException,
   public void map(IntWritable key, StrideResult value, Context context)
                   throws IOException, InterruptedException {
 	
-    if(value.isFull())
-    {
-    	double []data = value.getData();
-    	Arrays.sort(data);
-    }else{
+  //  if(value.isFull())
+ //   {
+   // 	double []data = value.getData();
+  //  	Arrays.sort(data);
+  //  }else{
     	context.write(key, value);
-    }
+    	System.out.println(value.toString());
+  //  }
    }
       
 }

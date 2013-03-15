@@ -3,6 +3,7 @@ package TRANS.MR.Median;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -15,6 +16,12 @@ import TRANS.Array.OptimusShape;
 import TRANS.util.TRANSDataIterator;
 
 public class StrideResult extends TRANSDataIterator {
+	
+	@Override
+	public String toString() {
+		return "StrideResult [id=" + id + ", result=" + result + ", contains="
+				+ contains + super.toString() + "]";
+	}
 	private int id = 0;
 	private double result = -1;
 	public double getResult() {
@@ -76,8 +83,6 @@ public class StrideResult extends TRANSDataIterator {
 	public void write(DataOutput out) throws IOException {
 		// TODO Auto-generated method stub
 		WritableUtils.writeVInt(out, this.id);
-		BooleanWritable w = new BooleanWritable(this.isFull());
-		w.write(out);
 	
 		WritableUtils.writeVInt(out, contains.size());
 		for(Iterator items = contains.iterator(); items.hasNext();){
@@ -92,7 +97,11 @@ public class StrideResult extends TRANSDataIterator {
 		for(PresultKey key: p)
 		{
 			r.init(key.start, key.shape);
-			this.init(key.start, key.shape);
+			System.out.println(super.toString());
+			if(!super.init(key.start, key.shape))
+			{
+				break;
+			}
 			while(r.next()&&this.next())
 			{
 				this.set(r.get());

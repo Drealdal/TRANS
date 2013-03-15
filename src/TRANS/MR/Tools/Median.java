@@ -34,6 +34,7 @@ public class Median {
 	options.addOption("name",true,"name of the array zoneName.arrayName");
 	options.addOption("start",true,"start to read");
 	options.addOption("off",true,"shape to read, start.length == off.lengh");
+	options.addOption("stride",true,"stride of the operation");
 	options.addOption("o",true,"output path");
 	options.addOption("push",false,"Push calculate to datanode");
 	
@@ -52,9 +53,10 @@ public class Median {
 	String name = cmd.getOptionValue("name");
 	String start = cmd.getOptionValue("start");
 	String off = cmd.getOptionValue("off");
+	String stride = cmd.getOptionValue("stride");
 	String out = cmd.getOptionValue("o");
 	
-	if( name == null || start == null || off == null || out == null )
+	if( name == null || start == null || off == null || stride == null || out == null )
 	{
 		f.printHelp("Reader has null", options);
 		System.exit(-1);
@@ -81,6 +83,7 @@ public class Median {
     conf.set("TRANS.zone.name", zoneName);
     conf.set("TRANS.array.name", arrayName);
     conf.set("TRANS.range.start",start);
+    conf.set("TRANS.range.stride", stride);
     conf.set("TRANS.range.offset",off);
     Job job = null;
  

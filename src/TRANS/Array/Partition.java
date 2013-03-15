@@ -494,8 +494,8 @@ public class Partition implements Writable, Runnable {
 
 	@Override
 	public String toString() {
-		return "Partition [arrayid=" + arrayid + ", pid=" + pid + ", size="
-				+ size + ",rid = " + rid + "]";
+		return "Partition [arrayid=" + arrayid + ", pid=" + pid + ", rid="
+				+ rid + ", zid=" + zid + "]";
 	}
 
 	@Override

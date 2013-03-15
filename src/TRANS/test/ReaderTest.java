@@ -22,10 +22,10 @@ public class ReaderTest {
 		// TODO Auto-generated method stub
 		OptimusConfiguration conf = new OptimusConfiguration("./conf");
 		PartitionReader reader = new PartitionReader(conf);
-		String zoneName = "test";
-		String arrayName = "test2";
-		int [] start = {0,0};
-		int [] off = {4,1};
+		String zoneName = TestConst.testZoneName;
+		String arrayName = TestConst.testArrayName;
+		int [] start = {4,4};
+		int [] off = {4,4};
 		ZoneClient zclient = new ZoneClient(conf);
 		OptimusZone zone = zclient.openZone(zoneName);
 		if(zone == null)

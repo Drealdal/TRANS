@@ -3,11 +3,16 @@ package TRANS.Array;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.hadoop.io.Writable;
 
 public class OptimusShape implements Writable {
 
+	@Override
+	public String toString() {
+		return "OptimusShape [shape=" + Arrays.toString(shape) + "]";
+	}
 	public int[] getShape() {
 		return shape;
 	}

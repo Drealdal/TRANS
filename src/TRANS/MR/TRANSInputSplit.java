@@ -56,7 +56,7 @@ public class TRANSInputSplit extends InputSplit implements Writable{
 	
 	private OptimusShape start = null; // start of the read range in the partition
 	private OptimusShape pshape = null;// shape of the partition
-	private OptimusShape stride = null;
+	private OptimusShape stride = new OptimusShape();
 	public OptimusShape getStride() {
 		return stride;
 	}
@@ -92,8 +92,9 @@ public class TRANSInputSplit extends InputSplit implements Writable{
 	@Override
 	public String toString() {
 		return "TRANSInputSplit [pid=" + pid + ", zone=" + zone + ", array="
-				+ array + ", start=" + start + ", off=" + off + ", confDir="
-				+ confDir + "]";
+				+ array + ", start=" + start + ", pshape=" + pshape
+				+ ", stride=" + stride + ", off=" + off + ", confDir="
+				+ confDir + ", hosts=" + hosts + "]";
 	}
 	public String getConfDir() {
 		return confDir;

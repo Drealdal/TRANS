@@ -1,6 +1,7 @@
 package TRANS.MR.Median;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -29,7 +30,7 @@ public class TRANSMedianRecordReader extends RecordReader<IntWritable,StrideResu
 	OptimusDataProtocol dp  = null;
 	PartitionReader reader = null;
 	StrideResult [] result = null;
-	int cur = 0;
+	int cur = -1;
 	// shape of the partition
 	@Override
 	public void initialize(InputSplit arg0, TaskAttemptContext context)
@@ -68,16 +69,17 @@ public class TRANSMedianRecordReader extends RecordReader<IntWritable,StrideResu
 		OptimusArray array = split.getArray();
 		Partition p = new Partition(split.getZone().getId(),array.getId(),
 				split.getPid(),new RID(0));
-		
-		ArrayWritable ret = dp.readStride(p, split.getPshape(), split.getStart(), 
+
+		System.out.println("Reading:"+p);
+		StrideResultArrayWritable ret = dp.readStride(p, split.getPshape(), split.getStart(), 
 				split.getOff(), split.getStride());
-		result = (StrideResult[]) ret.toArray();
+		result = (StrideResult[]) ret.getResult();
 	}
 
 	@Override
 	public boolean nextKeyValue() throws IOException, InterruptedException {
 		// TODO Auto-generated method stub
-		if(this.cur >= this.result.length)
+		if(this.cur >= this.result.length -1)
 		{
 			return false;
 		}else{

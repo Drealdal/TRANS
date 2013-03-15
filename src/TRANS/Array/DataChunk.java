@@ -298,6 +298,7 @@ public class DataChunk implements Comparable<DataChunk> {
 	 */
 	private boolean isOverlaped(int[] start, int[] off) {
 		int len = this.start.length;
+		
 		boolean isIntersect = true;
 		for (int i = 0; i < len; i++) {
 			if ((this.start[i] >= start[i] + off[i] || this.start[i]
@@ -480,6 +481,7 @@ public class DataChunk implements Comparable<DataChunk> {
 		{
 			offset = offset + start[i] * volume[i]*dsize[i+1];
 		}
+		System.out.println("Chunk Offset:"+offset);
 		return offset;
 	}
 	

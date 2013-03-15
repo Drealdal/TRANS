@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +30,7 @@ import TRANS.Calculator.OptimusCalculator;
 import TRANS.Client.creater.PartitionStreamCreater;
 import TRANS.Data.Optimus1Ddata;
 import TRANS.MR.Median.StrideResult;
+import TRANS.MR.Median.StrideResultArrayWritable;
 import TRANS.MR.io.AverageResult;
 import TRANS.Protocol.OptimusCalculatorProtocol;
 import TRANS.Protocol.OptimusDataProtocol;
@@ -439,14 +441,18 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 	}
 
 	@Override
-	public ArrayWritable readStride(Partition p,OptimusShape pshape, OptimusShape start,
+	public StrideResultArrayWritable readStride(Partition p,OptimusShape pshape, OptimusShape start,
 			OptimusShape off,OptimusShape stride) throws IOException {
-
+		System.out.println(p.toString());
 		OptimusZone zone = this.rmanger.getZone(p.getZid());
 		Vector<int[]> shapes = zone.getStrategy().getShapes();
 		
 		// start 是range的开始，off 是range的大小， stride是range的划分
-		DataChunk chunk = new DataChunk(start.getShape(), off.getShape());
+		System.out.println("RangeStart:"+Arrays.toString(start.getShape()));
+		System.out.println("RangeOff:"+Arrays.toString(off.getShape()));
+		
+
+		DataChunk chunk = new DataChunk(off.getShape(), stride.getShape());
 		
 		
 		int[] asize = zone.getSize().getShape();
@@ -454,18 +460,27 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 		// 没有考虑overlap
 		DataChunk partition = new DataChunk(asize, pstep);
 		int pnum = p.getPid().getId();
+		
 		for (int i = 0; i < asize.length; i++) {
-			while (partition.getChunkNum() < pnum) {
+			DataChunk tmp = null;
+			while (partition != null && partition.getChunkNum() < pnum) {
+				tmp = partition;
 				partition = partition.moveUp(i);
+				
+			}
+			if(partition == null)
+			{
+				partition = tmp;
 			}
 			if (partition.getChunkNum() == pnum) {
 				break;
-			} else {
-				partition.moveDown(i);
 			}
 		}
 		//所有overlap的stride及其编号
 		int []pstart = partition.getStart();
+		System.out.println("Partition Start:"+Arrays.toString(pstart));
+		System.out.println("Partition Size:"+Arrays.toString(partition.getChunkSize()));
+		
 		Set<DataChunk> chunks = chunk.getAdjacentChunks(pstart, partition.getChunkSize());
 		Map<Integer, StrideResult> itrs = new HashMap<Integer,StrideResult>();
 		for(DataChunk c:chunks)
@@ -476,7 +491,9 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 		}
 		DataChunk c = new DataChunk(pshape.getShape(),  shapes.get(p.getZid().getId()));
 		chunks = c.getAdjacentChunks(start.getShape(), off.getShape());
-		p.setRmanager(this.rmanger);
+		p=this.rmanger.getPartitionById(p.getArrayid(), p.getPid());
+		//p.setRmanager(this.rmanger);
+	
 		p.open();
 		int []rangeStart = start.getShape();
 		for(DataChunk cc:chunks)
@@ -494,8 +511,11 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 			{
 				
 				StrideResult tmp = (StrideResult)i.getValue();
-				tmp.addResult(cc.getStart(),cc.getChunkSize());
-				tmp.init(it.getStart(), it.getShape());
+				tmp.addResult(cc.getStart(),cc.getChunkSize());	
+				if(!tmp.init(it.getStart(), it.getShape()))
+				{
+					continue;
+				}
 				it.init(tmp.getStart(), tmp.getShape());
 				
 				while(it.next()&&tmp.next())
@@ -509,9 +529,11 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 		for(Map.Entry i: itrs.entrySet())
 		{
 			StrideResult r = (StrideResult)i.getValue();
+			System.out.println(r);
 			r.setId((Integer)i.getKey());
+			ret[s++]=r;
 		}
-		return new ArrayWritable(StrideResult.class,ret);
+		return new StrideResultArrayWritable(ret);
 	}
 
 }

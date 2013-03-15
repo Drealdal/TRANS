@@ -3,10 +3,12 @@ package TRANS.util;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.io.WritableUtils;
 
 import TRANS.Array.OptimusShape;
 
@@ -39,6 +41,15 @@ public class TRANSDataIterator implements Writable{
 	double []data = null;
 	//the description of the data
 	int [] start = null;
+	@Override
+	public String toString() {
+		return "TRANSDataIterator [data=" + Arrays.toString(data) + ", start="
+				+ Arrays.toString(start) + ", shape=" + Arrays.toString(shape)
+				+ ", rstart=" + Arrays.toString(rstart) + ", roff="
+				+ Arrays.toString(roff) + ", size=" + size + ", volume="
+				+ volume + "]";
+	}
+
 	int [] shape = null;
 	//the description of read operation
 	int [] rstart = null;
@@ -60,7 +71,7 @@ public class TRANSDataIterator implements Writable{
 		for(int i = 0 ; i < shape.length; i++)
 			volume *= shape[i];
 	}
-	public void init(int[] s, int[] o)
+	public boolean init(int[] s, int[] o)
 	{
 		int len = start.length;
 		this.rstart = new int[len];
@@ -70,6 +81,8 @@ public class TRANSDataIterator implements Writable{
 			this.rstart[i] = Math.max(s[i],start[i]);
 			this.roff[i] = Math.min(s[i]+o[i], start[i]+shape[i]);
 			this.roff[i] -= this.rstart[i];
+			if(this.roff[i] <= 0)
+				return false;
 		}
 		
 		this.fjump = new int[start.length];
@@ -84,6 +97,7 @@ public class TRANSDataIterator implements Writable{
 		len = start.length - 1;
 		itr = new int[len + 1];
 		itr[len]=-1;
+		return true;
 	}
 	public boolean next(){
 		int len = start.length - 1;
@@ -133,6 +147,9 @@ public class TRANSDataIterator implements Writable{
 				new OptimusDouble2ByteStreamWriter(this.data.length * 8,out);
 		writer.writeDouble(this.data);
 		writer.close();
+		WritableUtils.writeVInt(out, this.size);
+		WritableUtils.writeVInt(out, this.volume);
+		
 	}
 	@Override
 	public void readFields(DataInput in) throws IOException {
@@ -158,6 +175,8 @@ public class TRANSDataIterator implements Writable{
 		in.readFully(bdata);
 		reader.setData(bdata);
 		this.data = reader.readData();
+		this.size = WritableUtils.readVInt(in);
+		this.volume = WritableUtils.readVInt(in);
 	}
 	
 	public static void main(String []args)
@@ -184,6 +203,7 @@ public class TRANSDataIterator implements Writable{
 			citr.set(ritr.get());
 			
 		}
+		
 	}
 
 	public double[] getData() {

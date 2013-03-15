@@ -88,7 +88,7 @@ public class ClientTest {
 	public static void main(String[] args) throws IOException, WrongArgumentException, JDOMException, InterruptedException {
 		// TODO Auto-generated method stub
 		int [] srcStart = {0,0};
-		int [] vsize = TestConst.srcStart;
+		int [] vsize = TestConst.vsize;
 		int [] shape = TestConst.psize;
 		int [] srcShape = TestConst.sshape;
 		int [] dstShape = TestConst.dstShape1;
