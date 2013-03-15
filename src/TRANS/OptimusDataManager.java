@@ -19,6 +19,7 @@ import TRANS.Array.DataChunk;
 import TRANS.Array.OptimusShape;
 import TRANS.Array.OptimusZone;
 import TRANS.Array.PID;
+import TRANS.Array.PartitialCreateResult;
 import TRANS.Array.Partition;
 import TRANS.Array.RID;
 import TRANS.Calculator.OptimusCalculator;
@@ -68,7 +69,7 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 	OptimusReplicationManager rmanger = null;//
 	private Server server = null;
 
-	java.util.Map<Partition, TRANSDataIterator> partitionInCreate = new java.util.HashMap<Partition, TRANSDataIterator>();
+	java.util.Map<Partition, PartitialCreateResult> partitionInCreate = new java.util.HashMap<Partition, PartitialCreateResult>();
 
 	OptimusDataManager(OptimusConfiguration conf,
 			OptimusReplicationManager rmanger, int dataport, String dataDir,
@@ -357,7 +358,7 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 
 	@Override
 	public BooleanWritable putPartitionData(Partition p, TRANSDataIterator data) throws IOException {
-		TRANSDataIterator itp = null;
+		PartitialCreateResult itp = null;
 		DataChunk chunk = null;
 		OptimusZone zone = null;
 		int size = 0;
@@ -385,10 +386,14 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 					}
 				}
 				size = chunk.getSize();
-				itp = new TRANSDataIterator(new double[size],
+				itp = new PartitialCreateResult(new double[size],
 						chunk.getStart(), chunk.getChunkSize());
 				this.partitionInCreate.put(p, itp);
 			}
+		}
+		if(!itp.AddResult(data))
+		{
+			return new BooleanWritable(false);
 		}
 		itp.init(data.getStart(), data.getShape());
 		while(itp.next()&&data.next())
@@ -412,6 +417,7 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 			OptimusTranslator trans = new OptimusTranslator(size, chunk,dstChunk, w);
 			trans.start();
 			trans.write(itp.getData());
+			this.rmanger.addPartition(p);
 		}
 		
 		if(id > 0){

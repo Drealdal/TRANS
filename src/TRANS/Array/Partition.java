@@ -457,13 +457,7 @@ public class Partition implements Writable, Runnable {
 			e.printStackTrace();
 		}
 		
-		 ConcurrentHashMap<PID,Partition> ps = this.rmanager.getPartitions().get(this.getArrayid());
-		 if(ps == null)
-		 {
-			 ps = new  ConcurrentHashMap<PID,Partition>();
-			 this.rmanager.getPartitions().put(this.getArrayid(), ps);
-		 }
-		 ps.put(this.getPid(), this);
+		this.rmanager.addPartition(this);
 	}
 
 	public void setArrayid(ArrayID arrayid) {
