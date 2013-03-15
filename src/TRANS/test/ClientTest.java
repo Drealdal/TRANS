@@ -87,25 +87,27 @@ public class ClientTest {
 	 */
 	public static void main(String[] args) throws IOException, WrongArgumentException, JDOMException, InterruptedException {
 		// TODO Auto-generated method stub
-		int [] srcStart = {0,0,0};
-		int [] vsize = {8,8};
-		int [] shape = {2,2};
-		int [] srcShape = {2,1};// �д洢
-		int [] dstShape = {2,2};
-		int [] dstShape2 = {1,2};
-		int [] overlap = {2,2}; 
+		int [] srcStart = {0,0};
+		int [] vsize = TestConst.srcStart;
+		int [] shape = TestConst.psize;
+		int [] srcShape = TestConst.sshape;
+		int [] dstShape = TestConst.dstShape1;
+		int [] dstShape2 = TestConst.dstShape2;
+		int [] overlap = TestConst.overlap;
 		Vector<int []>strategy = new Vector<int []>();
-		strategy.add(dstShape2);
 		strategy.add(dstShape);
-		
+		strategy.add(dstShape2);
 		strategy.add(srcShape);
-		String name = "testArray";
+
+		String zoneName = TestConst.testZoneName;
+		String arrayName = TestConst.testArrayName;
+		
 		OptimusConfiguration conf = new OptimusConfiguration("./conf");
 		ZoneClient zcreater = new ZoneClient(conf);
-		OptimusZone zone = zcreater.openZone("test");
+		OptimusZone zone = zcreater.openZone(zoneName);
 		if(zone == null)
 		{
-			zone = zcreater.createZone("test", vsize, shape, strategy);
+			zone = zcreater.createZone(zoneName, vsize, shape, strategy);
 		}
 		if(zone == null)
 		{
@@ -113,11 +115,16 @@ public class ClientTest {
 			return;
 		}
 		long btime = System.currentTimeMillis();
-		ArrayCreater creater = new ArrayCreater(conf,zone,srcShape,"test3",1,0);
+		ArrayCreater creater = new ArrayCreater(conf,zone,srcShape,arrayName,1,0);
 		creater.create();
 		
 		DataChunk chunk = new DataChunk(vsize,shape);
-		double [] srcData = new double[900*247*20];
+		int len = 1;
+		for(int i = 0; i < vsize.length; i++)
+		{
+			len *= vsize[i];
+		}
+		double [] srcData = new double[len];
 		for(int i = 0  ; i < srcData.length; i++)
 		{
 			srcData[i] = i;
@@ -125,10 +132,7 @@ public class ClientTest {
 		
 		OptimusScanner scanner = new OptimusMemScanner(srcData,srcStart,vsize);
 		do{
-		//	float [] dstData = new float [8*8*8];
-		//	readFromMem(chunk.getStart(), chunk.getChunkStep(),vsize,shape, 
-		//			srcData,srcStart, dstData, chunk.getStart());
-			//creater.create();
+		
 			System.out.println(chunk);
 			chunk.setOverlap(overlap);
 			creater.createPartition(scanner,chunk,"testArray");

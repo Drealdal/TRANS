@@ -29,6 +29,7 @@ public class Byte2DoubleReader implements ByteReader {
 
 	public void setData(byte[] data) {
 		this.data = data;
+		this.cur = this.data.length;
 	}
 
 	public Byte2DoubleReader(int size, DataOutputStream out,RandomAccessFile in)

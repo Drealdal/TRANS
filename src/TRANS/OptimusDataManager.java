@@ -396,6 +396,7 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 			return new BooleanWritable(false);
 		}
 		itp.init(data.getStart(), data.getShape());
+		data.init(itp.getStart(), itp.getShape());
 		while(itp.next()&&data.next())
 		{
 			itp.add(data.get());
@@ -414,16 +415,20 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 			ByteWriter  w = new OptimusDouble2ByteRandomWriter(1024*1024,p.getDataf(),p);
 			shape = zone.getStrategy().getShapes().get(id);
 			DataChunk dstChunk = new DataChunk(chunk.getChunkSize(),shape);
-			OptimusTranslator trans = new OptimusTranslator(size, chunk,dstChunk, w);
+			DataChunk srcChunk = new DataChunk(chunk.getChunkSize(),chunk.getChunkSize());
+			
+			OptimusTranslator trans = new OptimusTranslator(size, srcChunk,dstChunk, w);
 			trans.start();
 			trans.write(itp.getData());
 			this.rmanger.addPartition(p);
 		}
 		
 		if(id > 0){
-			Host h = this.rmanger.getReplicateHost(p, p.getRid().getId() - 1);
+			Host h = this.rmanger.getReplicateHost(p, id - 1);
 			OptimusDataProtocol dp = h.getDataProtocol();
-			return dp.putPartitionData(p, data);
+			Partition np = p.clone();
+			np.setRid(new RID(id-1));
+			return dp.putPartitionData(np, data);
 		}
 		return new BooleanWritable(true);
 		

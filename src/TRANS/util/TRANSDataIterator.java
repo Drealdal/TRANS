@@ -117,28 +117,38 @@ public class TRANSDataIterator implements Writable{
 	@Override
 	public void write(DataOutput out) throws IOException {
 		// TODO Auto-generated method stub
+	
+		new OptimusShape(this.start).write(out);
+		new OptimusShape(this.shape).write(out);
 		OptimusDouble2ByteStreamWriter writer = 
 				new OptimusDouble2ByteStreamWriter(this.data.length * 8,out);
 		writer.writeDouble(this.data);
-		new OptimusShape(this.start).write(out);
-		new OptimusShape(this.shape).write(out);
+		writer.close();
 	}
 	@Override
 	public void readFields(DataInput in) throws IOException {
 		// TODO Auto-generated method stub
-		Byte2DoubleReader reader = new Byte2DoubleReader();
-		int len = in.readInt();
-		byte[] bdata = new byte[len*8];  
-		in.readFully(bdata);
 		
-		reader.setData(bdata);
-		this.data = reader.readData();
+		
 		OptimusShape s = new OptimusShape();
 		s.readFields(in);
 		this.start = s.getShape();
 		s.readFields(in);
 		this.shape = s.getShape();
 		
+		Byte2DoubleReader reader = new Byte2DoubleReader();
+		
+		
+		
+		int len = 1, l = shape.length;
+		for( int i = 0; i < l; i++)
+		{
+			len *= shape[i];
+		}
+		byte[] bdata = new byte[len*8];  
+		in.readFully(bdata);
+		reader.setData(bdata);
+		this.data = reader.readData();
 	}
 	
 	public static void main(String []args)

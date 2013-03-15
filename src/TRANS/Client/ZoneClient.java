@@ -8,6 +8,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.ipc.RPC;
 
+import TRANS.Array.OptimusArray;
 import TRANS.Array.OptimusShape;
 import TRANS.Array.OptimusShapes;
 import TRANS.Array.OptimusZone;
@@ -59,4 +60,5 @@ public class ZoneClient {
 		}
 		return zone;
 	}
+	
 }
