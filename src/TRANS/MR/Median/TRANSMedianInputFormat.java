@@ -123,8 +123,7 @@ public class TRANSMedianInputFormat extends FileInputFormat<IntWritable,StripeMe
 				noff[i] -= nstart[i];
 				rstart[i] =nstart[i] - cstart[i]; // 
 			}
-			OptimusShape s = new OptimusShape(rstart);
-			OptimusShape o = new OptimusShape(noff);
+			
 			PID p = new PID(c.getChunkNum());
 			Partition pd = new Partition(zone.getId(),array.getId(),p,new RID(0));
 			TransHostList l = null;

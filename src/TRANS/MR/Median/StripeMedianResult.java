@@ -105,7 +105,7 @@ public class StripeMedianResult implements Writable {
 	@Override
 	public void write(DataOutput out) throws IOException {
 		// TODO Auto-generated method stub
-		System.out.println(this);
+		
 		WritableUtils.writeVInt(out, this.id);
 	
 		new OptimusShape(this.start).write(out);

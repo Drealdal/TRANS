@@ -52,9 +52,6 @@ public class MedianReducer extends 	Reducer<IntWritable, StripeMedianResult, Int
 	public void reduce(IntWritable key, Iterable<StripeMedianResult> values,
 			Context context) throws InterruptedException, IOException {
 		Iterator<StripeMedianResult> it = values.iterator();
-		DataChunk partition = new DataChunk(rangeOff, stride);
-		int pnum = key.get();
-		DataChunk tmpar = null;
 		StripeMedianResult result = it.next();
 		if(result.isFull())
 		{

@@ -155,7 +155,7 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 
 		p.open();
 		for (DataChunk c : chunks) {
-			System.out.println(c);
+			
 			double[] data = p.read(c);
 			int[] nstart = new int[start.length];
 			int[] noff = new int[start.length];
@@ -444,7 +444,7 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 	@Override
 	public MedianResultArrayWritable readStride(Partition p,OptimusShape pshape, OptimusShape start,
 			OptimusShape off,OptimusShape stride) throws IOException {
-		System.out.println(p.toString());
+		//System.out.println(p.toString());
 		OptimusZone zone = this.rmanger.getZone(p.getZid());
 		Vector<int[]> shapes = zone.getStrategy().getShapes();
 	
@@ -537,7 +537,7 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 				{
 					continue;
 				}
-				//tmp.addResult(it.getStart(),it.getShape());	
+				
 				it.init(tmp.getStart(), stride.getShape());
 				
 				while(it.next())
