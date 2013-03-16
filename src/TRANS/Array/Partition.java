@@ -456,7 +456,7 @@ public class Partition implements Writable, Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		this.rid = new RID(rnum-1);
 		this.rmanager.addPartition(this);
 	}
 

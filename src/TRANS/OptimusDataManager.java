@@ -446,40 +446,33 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 		System.out.println(p.toString());
 		OptimusZone zone = this.rmanger.getZone(p.getZid());
 		Vector<int[]> shapes = zone.getStrategy().getShapes();
-		
-		// start 是range的开始，off 是range的大小， stride是range的划分
-		System.out.println("RangeStart:"+Arrays.toString(start.getShape()));
-		System.out.println("RangeOff:"+Arrays.toString(off.getShape()));
-		
-
+	
 		DataChunk chunk = new DataChunk(off.getShape(), stride.getShape());
 		
+		p=this.rmanger.getPartitionById(p.getArrayid(), p.getPid());
 		
 		int[] asize = zone.getSize().getShape();
 		int[] pstep = zone.getPstep().getShape();
 		// 没有考虑overlap
 		DataChunk partition = new DataChunk(asize, pstep);
 		int pnum = p.getPid().getId();
-		
+		DataChunk tmpar = null;
 		for (int i = 0; i < asize.length; i++) {
-			DataChunk tmp = null;
+			
 			while (partition != null && partition.getChunkNum() < pnum) {
-				tmp = partition;
+				tmpar = partition;
 				partition = partition.moveUp(i);
 				
 			}
-			if(partition == null)
-			{
-				partition = tmp;
-			}
+			if(partition == null) partition = tmpar;
 			if (partition.getChunkNum() == pnum) {
 				break;
 			}
+			partition = tmpar;
+			
 		}
 		//所有overlap的stride及其编号
 		int []pstart = partition.getStart();
-		System.out.println("Partition Start:"+Arrays.toString(pstart));
-		System.out.println("Partition Size:"+Arrays.toString(partition.getChunkSize()));
 		
 		Set<DataChunk> chunks = chunk.getAdjacentChunks(pstart, partition.getChunkSize());
 		Map<Integer, StrideResult> itrs = new HashMap<Integer,StrideResult>();
@@ -489,9 +482,23 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 			StrideResult itr = new StrideResult(data,c.getStart(),c.getChunkSize());
 			itrs.put(c.getChunkNum(), itr);
 		}
-		DataChunk c = new DataChunk(pshape.getShape(),  shapes.get(p.getZid().getId()));
-		chunks = c.getAdjacentChunks(start.getShape(), off.getShape());
-		p=this.rmanger.getPartitionById(p.getArrayid(), p.getPid());
+		
+		DataChunk c = new DataChunk(pshape.getShape(),  shapes.get(p.getRid().getId()));
+		System.out.println("Reading:"+p.toString()+"DataChunk:"+c);
+		
+		int []readStart = new int[pstart.length];
+		int []readOff = new int[pstart.length];
+		
+		for(int i = 0 ; i < pstart.length; i++)
+		{
+			readStart[i] = pstart[i] > start.getShape()[i] ?  pstart[i]:start.getShape()[i];
+			readOff[i] = readStart[i] + off.getShape()[i] < pstart[i] + partition.getChunkSize()[i] ? readStart[i] + off.getShape()[i]:pstart[i] + partition.getChunkSize()[i]; 
+			readOff[i] -= readStart[i];
+			
+			readStart[i] =readStart[i] - pstart[i]; // 
+		}
+		chunks = c.getAdjacentChunks(readStart, readOff);
+		
 		//p.setRmanager(this.rmanger);
 	
 		p.open();
@@ -509,13 +516,13 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 			StrideResult it = new StrideResult(data,startInRange,cc.getChunkSize());
 			for(Map.Entry i: itrs.entrySet())
 			{
-				
 				StrideResult tmp = (StrideResult)i.getValue();
-				tmp.addResult(it.getStart(),it.getShape());	
+				
 				if(!tmp.init(it.getStart(), it.getShape()))
 				{
 					continue;
 				}
+				tmp.addResult(it.getStart(),it.getShape());	
 				it.init(tmp.getStart(), tmp.getShape());
 				
 				while(it.next()&&tmp.next())

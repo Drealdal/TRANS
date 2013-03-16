@@ -102,12 +102,15 @@ public class StrideResult extends TRANSDataIterator {
 		Set<PresultKey> p = r.getContains();
 		for(PresultKey key: p)
 		{
+			if(this.contains.contains(key))
+				continue;
 			r.init(key.start, key.shape);
-			System.out.println(super.toString());
-			if(!super.init(key.start, key.shape))
+
+			if(!this.init(key.start, key.shape))
 			{
 				break;
 			}
+			this.contains.add(key);
 			while(r.next()&&this.next())
 			{
 				this.set(r.get());
@@ -123,6 +126,7 @@ public class StrideResult extends TRANSDataIterator {
 	@Override
 	public void readFields(DataInput in) throws IOException {
 		// TODO Auto-generated method stub
+		this.contains = new HashSet<PresultKey>();
 		this.id = WritableUtils.readVInt(in);
 		int len = WritableUtils.readVInt(in);
 		

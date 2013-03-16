@@ -134,7 +134,7 @@ public class ClientTest {
 		do{
 		
 			System.out.println(chunk);
-			chunk.setOverlap(overlap);
+			//chunk.setOverlap(overlap);
 			creater.createPartition(scanner,chunk,"testArray");
 		}while(chunk.nextChunk());
 		creater.close(1000, TimeUnit.SECONDS);

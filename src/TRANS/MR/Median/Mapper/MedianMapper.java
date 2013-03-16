@@ -91,8 +91,9 @@ protected void cleanup(Context context) throws IOException,
    // 	double []data = value.getData();
   //  	Arrays.sort(data);
   //  }else{
-    	context.write(key, value);
-    	System.out.println(value.toString());
+	  System.out.println(value.toString());
+	  context.write(key, value);
+    	
   //  }
    }
       

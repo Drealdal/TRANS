@@ -51,29 +51,36 @@ public class TRANSMedianRecordReader extends RecordReader<IntWritable,StrideResu
 		Vector<Host> h = list.getHosts();
 		String hostname = InetAddress.getLocalHost().getHostName();
 		Host use = null;
+		int r = 0;
 		for( int i = 0 ; i < h.size(); i++)
 		{
 			if( hostname.equals(h.get(i).getHost()))
 			{
 				use = h.get(i);
+				r=i;
 				break;
 			}
 		}
+		
 		if(use == null)
 		{
 			Random rand = new Random();
-			use = h.get(rand.nextInt()%h.size());
+			r = rand.nextInt()%h.size();
+			use = h.get(r);
 		}
 		dp = use.getDataProtocol();
-
+		System.out.println("Reading From node" + use.toString());
 		OptimusArray array = split.getArray();
 		Partition p = new Partition(split.getZone().getId(),array.getId(),
-				split.getPid(),new RID(0));
+				split.getPid(),new RID(r));
 
 		System.out.println("Reading:"+p);
 		StrideResultArrayWritable ret = dp.readStride(p, split.getPshape(), split.getStart(), 
 				split.getOff(), split.getStride());
 		result = (StrideResult[]) ret.getResult();
+		for(int i=0;i<result.length;i++)
+			System.out.println(result[0]);
+		
 	}
 
 	@Override
