@@ -91,7 +91,7 @@ public class Median {
     job = new Job(conf, "Median");
     job.setInputFormatClass(TRANSMedianInputFormat.class);
     job.setJarByClass(Median.class);
-
+    job.setCombinerClass(TRANS.MR.Median.combiner.MedianCombiner.class);
     job.setMapperClass(TRANS.MR.Median.Mapper.MedianMapper.class);
 	job.setReducerClass(TRANS.MR.Median.Reducer.MedianReducer.class);
 	

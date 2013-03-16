@@ -14,7 +14,7 @@ public class TestConst {
 	static public int [] dstShape2={1,4,4,1};
 	static public int [] overlap={2,2,2,2};
 	
-	static public int [] stride ={2,2};
+	static public int [] stride ={2,2,2,2};
 	static public String nextArrayName()
 	{
 		Random r = new Random();
