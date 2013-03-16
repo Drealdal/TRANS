@@ -30,7 +30,7 @@ import TRANS.Protocol.OptimusCatalogProtocol;
 import TRANS.util.OptimusConfiguration;
 import TRANS.util.TransHostList;
 
-public class TRANSMedianInputFormat extends FileInputFormat<IntWritable,StrideResult> {
+public class TRANSMedianInputFormat extends FileInputFormat<IntWritable,StripeMedianResult> {
 
 	@Override
 	public List<InputSplit> getSplits(JobContext job) throws IOException {
@@ -88,13 +88,13 @@ public class TRANSMedianInputFormat extends FileInputFormat<IntWritable,StrideRe
 		}
 		DataChunk chunk = new DataChunk(zone.getSize().getShape(),zone.getPstep().getShape());
 		Set<DataChunk> chunks = chunk.getAdjacentChunks(spoint, opoint);
-		System.out.println("After adjacent!!");
+	
 		OptimusCatalogProtocol ci = zclient.getCi();
 		OptimusArray array = null;
 		try {
-			System.out.println("Before opening Array!");
+			
 			array = ci.openArray(zone.getId(),new Text(aname));
-			System.out.println("After opening Array!");
+			
 			
 		} catch (WrongArgumentException e) {
 			// TODO Auto-generated catch block
@@ -103,7 +103,7 @@ public class TRANSMedianInputFormat extends FileInputFormat<IntWritable,StrideRe
 		}
 		List<InputSplit> splits = new LinkedList<InputSplit>();
 		
-		System.out.println("Querying:" + zone.getName()+"."+array.getName());
+		
 		for(DataChunk c: chunks)
 		{
 			System.out.println(c);
@@ -135,18 +135,19 @@ public class TRANSMedianInputFormat extends FileInputFormat<IntWritable,StrideRe
 				e.printStackTrace();
 				System.exit(-3);
 			}
+			
 			TRANSInputSplit split = new TRANSInputSplit(zone,array,p,new OptimusShape(spoint), new OptimusShape(opoint),confDir);
 			split.setHosts(l);
 			split.setStride(new OptimusShape(stridePoint));
 			split.setPshape(new OptimusShape(c.getChunkSize()));
-			System.out.println(split);
+			
 			splits.add(split);
 		}
 		return splits;
 	}
 
 	@Override
-	public RecordReader<IntWritable, StrideResult> createRecordReader(InputSplit split,
+	public RecordReader<IntWritable, StripeMedianResult> createRecordReader(InputSplit split,
 			TaskAttemptContext context) throws IOException,
 			InterruptedException {
 		// TODO Auto-generated method stub

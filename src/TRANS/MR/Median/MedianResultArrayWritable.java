@@ -8,17 +8,17 @@ import org.apache.hadoop.io.ArrayWritable;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.WritableUtils;
 
-public class StrideResultArrayWritable implements Writable {
+public class MedianResultArrayWritable implements Writable {
 
-	public StrideResult[] getResult() {
+	public StripeMedianResult[] getResult() {
 		return result;
 	}
-	public void setResult(StrideResult[] result) {
+	public void setResult(StripeMedianResult[] result) {
 		this.result = result;
 	}
-	StrideResult [] result = null;
-	public StrideResultArrayWritable(){}
-	public StrideResultArrayWritable(StrideResult []r){
+	private StripeMedianResult [] result = null;
+	public MedianResultArrayWritable(){}
+	public MedianResultArrayWritable(StripeMedianResult []r){
 		this.result = r;
 	}
 	@Override
@@ -47,10 +47,10 @@ public class StrideResultArrayWritable implements Writable {
 		{
 			return;
 		}
-		this.result = new StrideResult[len];
+		this.result = new StripeMedianResult[len];
 		for(int i = 0; i <len; i++)
 		{
-			result[i] = new StrideResult();
+			result[i] = new StripeMedianResult();
 			result[i].readFields(in);
 		}
 	}

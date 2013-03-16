@@ -17,7 +17,8 @@ import TRANS.Client.ZoneClient;
 import TRANS.Client.Reader.PartitionReader;
 import TRANS.Exceptions.WrongArgumentException;
 import TRANS.MR.Median.StrideResult;
-import TRANS.MR.Median.StrideResultArrayWritable;
+import TRANS.MR.Median.MedianResultArrayWritable;
+import TRANS.MR.Median.StripeMedianResult;
 import TRANS.Protocol.OptimusCatalogProtocol;
 import TRANS.Protocol.OptimusDataProtocol;
 import TRANS.util.Host;
@@ -39,25 +40,28 @@ public class ReadStride {
 		}
 		OptimusCatalogProtocol ci = zclient.getCi();
 		double []data = new double[8];
-		StrideResult r = new StrideResult(data,TestConst.srcStart,TestConst.vsize);
+		StripeMedianResult r = new StripeMedianResult(0,TestConst.srcStart,TestConst.vsize);
 		OptimusArray array = ci.openArray(zone.getId(), new Text(arrayName));
-		int []rangeStart={0,0};
-		int []rangeOff={1,8};
+		int []rangeStart={1,1};
+		int []rangeOff={4,6};
 		for (int i = 0; i < 4; i++) {
 			Partition p = new Partition(zone.getId(), array.getId(),
 					new PID(i), new RID(0));
 			Host h = ci.getReplicateHost(p, new RID(1));
 			OptimusDataProtocol dp = h.getDataProtocol();
 
-			StrideResultArrayWritable a = dp.readStride(p, new OptimusShape(
+			MedianResultArrayWritable a = dp.readStride(p, new OptimusShape(
 					TestConst.psize), new OptimusShape(rangeStart),
 					new OptimusShape(rangeOff), new OptimusShape(
 							TestConst.stride));
 			
-			System.out.println(a.getResult()[0].toString());
-			r.add(a.getResult()[0]);
 			
+			for(int j = 0 ; j < a.getResult().length;j++)
+			{
+				r.add(a.getResult()[j]);
+			}
+			System.out.println(r);
 		}
-		System.out.println(r);
+		
 	}
 }

@@ -22,16 +22,14 @@ import TRANS.Exceptions.WrongArgumentException;
 import TRANS.MR.TRANSInputSplit;
 import TRANS.Protocol.OptimusDataProtocol;
 import TRANS.util.*;
-public class TRANSMedianRecordReader extends RecordReader<IntWritable,StrideResult>{
+public class TRANSMedianRecordReader extends RecordReader<IntWritable,StripeMedianResult>{
 
-	public Map<Integer,StrideResult> values = new HashMap<Integer,StrideResult>();
-	//int []start = null;
-	private boolean readed = false;
+	public Map<Integer,StripeMedianResult> values = new HashMap<Integer,StripeMedianResult>();
+
 	OptimusDataProtocol dp  = null;
 	PartitionReader reader = null;
-	StrideResult [] result = null;
+	StripeMedianResult [] result = null;
 	int cur = -1;
-	// shape of the partition
 	@Override
 	public void initialize(InputSplit arg0, TaskAttemptContext context)
 			throws IOException, InterruptedException {
@@ -69,20 +67,14 @@ public class TRANSMedianRecordReader extends RecordReader<IntWritable,StrideResu
 			use = h.get(r);
 		}
 		dp = use.getDataProtocol();
-		System.out.println("Reading From node" + use.toString());
 		OptimusArray array = split.getArray();
 		Partition p = new Partition(split.getZone().getId(),array.getId(),
 				split.getPid(),new RID(r));
-
-		System.out.println("Reading:"+p);
-		StrideResultArrayWritable ret = dp.readStride(p, split.getPshape(), split.getStart(), 
+		MedianResultArrayWritable ret = dp.readStride(p, split.getPshape(), split.getStart(), 
 				split.getOff(), split.getStride());
-		result = (StrideResult[]) ret.getResult();
-		for(int i=0;i<result.length;i++)
-			System.out.println(result[0]);
+		result = (StripeMedianResult[]) ret.getResult();
 		
 	}
-
 	@Override
 	public boolean nextKeyValue() throws IOException, InterruptedException {
 		// TODO Auto-generated method stub
@@ -94,26 +86,22 @@ public class TRANSMedianRecordReader extends RecordReader<IntWritable,StrideResu
 			return true;
 		}
 	}
-
 	@Override
 	public IntWritable getCurrentKey() throws IOException, InterruptedException {
 		// TODO Auto-generated method stub
 		return new IntWritable(result[this.cur].getId());
 	}
-
 	@Override
-	public StrideResult getCurrentValue() throws IOException,
+	public StripeMedianResult getCurrentValue() throws IOException,
 			InterruptedException {
 		// TODO Auto-generated method stub
 		return result[this.cur];
 	}
-
 	@Override
 	public float getProgress() throws IOException, InterruptedException {
 		// TODO Auto-generated method stub
 		return (float) (this.cur/(result.length*1.0) + 1/3);
 	}
-
 	@Override
 	public void close() throws IOException {
 		// TODO Auto-generated method stub

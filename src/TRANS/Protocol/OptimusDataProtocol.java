@@ -12,7 +12,7 @@ import TRANS.Array.OptimusShape;
 import TRANS.Array.PID;
 import TRANS.Array.Partition;
 import TRANS.Array.RID;
-import TRANS.MR.Median.StrideResultArrayWritable;
+import TRANS.MR.Median.MedianResultArrayWritable;
 import TRANS.MR.io.AverageResult;
 import TRANS.util.Host;
 import TRANS.util.OptimusData;
@@ -34,7 +34,7 @@ public interface OptimusDataProtocol extends VersionedProtocol {
 	 *rnum the identify of the replica
 	 * */
 	public BooleanWritable putPartitionData(Partition p, TRANSDataIterator data) throws IOException;
-	public StrideResultArrayWritable  readStride(Partition p, OptimusShape pshape,OptimusShape start, 
+	public MedianResultArrayWritable  readStride(Partition p, OptimusShape pshape,OptimusShape start, 
 			OptimusShape off,OptimusShape stride)throws IOException;
 	 
 }

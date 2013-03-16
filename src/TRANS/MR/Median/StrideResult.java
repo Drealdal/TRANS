@@ -41,43 +41,11 @@ public class StrideResult extends TRANSDataIterator {
 	{
 		super(data,start,shape);
 	}
-	class PresultKey implements Writable{
-		@Override
-		public String toString() {
-			return "PresultKey [start=" + Arrays.toString(start) + ", shape="
-					+ Arrays.toString(shape) + "]";
-		}
-
-		protected int[] start = null;
-		protected int[] shape = null;
-		public PresultKey(){};
-		public PresultKey(int start[], int[] end) {
-			this.start = start;
-			this.shape = end;
-		}
-
-		@Override
-		public void write(DataOutput out) throws IOException {
-			// TODO Auto-generated method stub
-			new OptimusShape(start).write(out);
-			new OptimusShape(shape).write(out);
-		}
-
-		@Override
-		public void readFields(DataInput in) throws IOException {
-			// TODO Auto-generated method stub
-			OptimusShape s = new OptimusShape();
-			s.readFields(in);
-			this.start = s.getShape();
-			s.readFields(in);
-			this.shape = s.getShape();
-			
-		}
-	}
-	Set<PresultKey> contains = new HashSet<PresultKey>();
+	
+	Set<OptimusResultKey> contains = new HashSet<OptimusResultKey>();
 	public boolean addResult(int []start,int[]off)
 	{
-		PresultKey key = new PresultKey(start,off);
+		OptimusResultKey key = new OptimusResultKey(start,off);
 		if(this.contains.contains(key))
 		{
 			return false;
@@ -89,18 +57,17 @@ public class StrideResult extends TRANSDataIterator {
 	public void write(DataOutput out) throws IOException {
 		// TODO Auto-generated method stub
 		WritableUtils.writeVInt(out, this.id);
-	
 		WritableUtils.writeVInt(out, contains.size());
 		for(Iterator items = contains.iterator(); items.hasNext();){
-			PresultKey item = (PresultKey)items.next();
+			OptimusResultKey item = (OptimusResultKey)items.next();
 			item.write(out);
 		}
 		super.write(out);
 	}
 	public void add(StrideResult r)
 	{
-		Set<PresultKey> p = r.getContains();
-		for(PresultKey key: p)
+		Set<OptimusResultKey> p = r.getContains();
+		for(OptimusResultKey key: p)
 		{
 			if(this.contains.contains(key))
 				continue;
@@ -117,22 +84,22 @@ public class StrideResult extends TRANSDataIterator {
 			}
 		}
 	}
-	public Set<PresultKey> getContains() {
+	public Set<OptimusResultKey> getContains() {
 		return contains;
 	}
-	public void setContains(Set<PresultKey> contains) {
+	public void setContains(Set<OptimusResultKey> contains) {
 		this.contains = contains;
 	}
 	@Override
 	public void readFields(DataInput in) throws IOException {
 		// TODO Auto-generated method stub
-		this.contains = new HashSet<PresultKey>();
+		this.contains = new HashSet<OptimusResultKey>();
 		this.id = WritableUtils.readVInt(in);
 		int len = WritableUtils.readVInt(in);
 		
 		for(int i = 0 ; i < len ; i ++)
 		{
-			PresultKey key = new PresultKey();
+			OptimusResultKey key = new OptimusResultKey();
 			key.readFields(in);
 			contains.add(key);
 		}

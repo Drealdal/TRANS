@@ -16,13 +16,14 @@ import TRANS.Array.OptimusZone;
 import TRANS.Client.ZoneClient;
 import TRANS.Exceptions.WrongArgumentException;
 import TRANS.MR.Median.StrideResult;
+import TRANS.MR.Median.StripeMedianResult;
 import TRANS.Protocol.OptimusCatalogProtocol;
 import TRANS.util.OptimusConfiguration;
 
 /**
  * Mapper for the Average operator
  */
-public class MedianMapper extends Mapper<IntWritable, StrideResult, IntWritable, StrideResult> {
+public class MedianMapper extends Mapper<IntWritable, StripeMedianResult, IntWritable, StripeMedianResult> {
   public static enum InvalidCell { INVALID_CELL_COUNT } ;
 
   Vector<Integer> fullIds = new Vector<Integer>();
@@ -83,7 +84,7 @@ protected void cleanup(Context context) throws IOException,
    * @param value an Array to process that corresponds to the given key 
    * @param context the Context object for the currently executing job
    */
-  public void map(IntWritable key, StrideResult value, Context context)
+  public void map(IntWritable key, StripeMedianResult value, Context context)
                   throws IOException, InterruptedException {
 	
   //  if(value.isFull())
@@ -91,9 +92,12 @@ protected void cleanup(Context context) throws IOException,
    // 	double []data = value.getData();
   //  	Arrays.sort(data);
   //  }else{
-	  System.out.println(value.toString());
-	  context.write(key, value);
-    	
+	//  if(value.isFull())
+	//  {
+		  
+//	  }else{
+		  context.write(key, value);
+	//  }
   //  }
    }
       

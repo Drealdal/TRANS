@@ -30,7 +30,8 @@ import TRANS.Calculator.OptimusCalculator;
 import TRANS.Client.creater.PartitionStreamCreater;
 import TRANS.Data.Optimus1Ddata;
 import TRANS.MR.Median.StrideResult;
-import TRANS.MR.Median.StrideResultArrayWritable;
+import TRANS.MR.Median.MedianResultArrayWritable;
+import TRANS.MR.Median.StripeMedianResult;
 import TRANS.MR.io.AverageResult;
 import TRANS.Protocol.OptimusCalculatorProtocol;
 import TRANS.Protocol.OptimusDataProtocol;
@@ -441,7 +442,7 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 	}
 
 	@Override
-	public StrideResultArrayWritable readStride(Partition p,OptimusShape pshape, OptimusShape start,
+	public MedianResultArrayWritable readStride(Partition p,OptimusShape pshape, OptimusShape start,
 			OptimusShape off,OptimusShape stride) throws IOException {
 		System.out.println(p.toString());
 		OptimusZone zone = this.rmanger.getZone(p.getZid());
@@ -473,21 +474,35 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 		}
 		//所有overlap的stride及其编号
 		int []pstart = partition.getStart();
-		
-		Set<DataChunk> chunks = chunk.getAdjacentChunks(pstart, partition.getChunkSize());
-		Map<Integer, StrideResult> itrs = new HashMap<Integer,StrideResult>();
-		for(DataChunk c:chunks)
-		{
-			double []data = new double[c.getSize()];
-			StrideResult itr = new StrideResult(data,c.getStart(),c.getChunkSize());
-			itrs.put(c.getChunkNum(), itr);
-		}
-		
-		DataChunk c = new DataChunk(pshape.getShape(),  shapes.get(p.getRid().getId()));
-		System.out.println("Reading:"+p.toString()+"DataChunk:"+c);
-		
 		int []readStart = new int[pstart.length];
 		int []readOff = new int[pstart.length];
+		
+		for(int i = 0 ; i < pstart.length; i++)
+		{
+			readStart[i] = pstart[i] > start.getShape()[i] ?  pstart[i]:start.getShape()[i];
+			readOff[i] = readStart[i] + off.getShape()[i] < pstart[i] + partition.getChunkSize()[i] ? readStart[i] + off.getShape()[i]:pstart[i] + partition.getChunkSize()[i]; 
+			readOff[i] -= readStart[i];
+			
+			readStart[i] =readStart[i] - start.getShape()[i]; // 
+		}
+		
+		Set<DataChunk> chunks = chunk.getAdjacentChunks(readStart, readOff);
+		Map<Integer, StripeMedianResult> itrs = new HashMap<Integer,StripeMedianResult>();
+		for(DataChunk c:chunks)
+		{
+			int []gstart = new int[pstart.length];
+			for(int i = 0 ; i < pstart.length; i++)
+			{
+				gstart[i] = start.getShape()[i]+c.getStart()[i];
+			}
+			StripeMedianResult itr = new StripeMedianResult(c.getChunkNum(),gstart,stride.getShape());
+			itrs.put(c.getChunkNum(), itr);
+		}
+
+		DataChunk c = new DataChunk(pshape.getShape(),  shapes.get(p.getRid().getId()));
+		
+		//int []readStart = new int[pstart.length];
+		//int []readOff = new int[pstart.length];
 		
 		for(int i = 0 ; i < pstart.length; i++)
 		{
@@ -506,41 +521,40 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 		for(DataChunk cc:chunks)
 		{
 			double [] data = p.read(cc);
-			int [] startInRange = new int [asize.length];
+			int [] globalRange = new int [asize.length];
 			int [] cstart = cc.getStart();
 			for(int i = 0 ; i < asize.length; i++)
 			{
-				startInRange[i] = cstart[i] + pstart[i] - rangeStart[i];
+				globalRange[i] = cstart[i] + pstart[i];
 			}
 			
-			StrideResult it = new StrideResult(data,startInRange,cc.getChunkSize());
+			StrideResult it = new StrideResult(data,globalRange,cc.getChunkSize());
 			for(Map.Entry i: itrs.entrySet())
 			{
-				StrideResult tmp = (StrideResult)i.getValue();
+				StripeMedianResult tmp = (StripeMedianResult)i.getValue();
 				
-				if(!tmp.init(it.getStart(), it.getShape()))
+				if(!tmp.isOverlaped(it.getStart(), it.getShape()))
 				{
 					continue;
 				}
-				tmp.addResult(it.getStart(),it.getShape());	
-				it.init(tmp.getStart(), tmp.getShape());
+				//tmp.addResult(it.getStart(),it.getShape());	
+				it.init(tmp.getStart(), stride.getShape());
 				
-				while(it.next()&&tmp.next())
+				while(it.next())
 				{
 					tmp.add(it.get());
 				}
 			}
 		}
-		StrideResult [] ret = new StrideResult[itrs.size()];
+		StripeMedianResult [] ret = new StripeMedianResult[itrs.size()];
 		int s = 0;
 		for(Map.Entry i: itrs.entrySet())
 		{
-			StrideResult r = (StrideResult)i.getValue();
-			System.out.println(r);
+			StripeMedianResult r = (StripeMedianResult)i.getValue();
 			r.setId((Integer)i.getKey());
 			ret[s++]=r;
 		}
-		return new StrideResultArrayWritable(ret);
+		return new MedianResultArrayWritable(ret);
 	}
 
 }

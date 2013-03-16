@@ -17,6 +17,7 @@ import TRANS.MR.Average.Mapper.AverageMapper;
 import TRANS.MR.Average.Reducer.AverageReducer;
 import TRANS.MR.Combiner.AverageCombiner;
 import TRANS.MR.Median.StrideResult;
+import TRANS.MR.Median.StripeMedianResult;
 import TRANS.MR.Median.TRANSMedianInputFormat;
 import TRANS.MR.io.AverageResult;
 
@@ -95,7 +96,7 @@ public class Median {
 	job.setReducerClass(TRANS.MR.Median.Reducer.MedianReducer.class);
 	
     job.setMapOutputKeyClass(IntWritable.class);
-    job.setMapOutputValueClass(StrideResult.class);
+    job.setMapOutputValueClass(StripeMedianResult.class);
     
     job.setOutputKeyClass(IntWritable.class);
     job.setOutputValueClass(DoubleWritable.class);

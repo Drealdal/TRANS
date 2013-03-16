@@ -481,7 +481,6 @@ public class DataChunk implements Comparable<DataChunk> {
 		{
 			offset = offset + start[i] * volume[i]*dsize[i+1];
 		}
-		System.out.println("Chunk Offset:"+offset);
 		return offset;
 	}
 	

@@ -12,8 +12,9 @@ import org.apache.hadoop.mapreduce.Reducer.Context;
 
 import TRANS.Array.DataChunk;
 import TRANS.MR.Median.StrideResult;
+import TRANS.MR.Median.StripeMedianResult;
 
-public class MedianReducer extends 	Reducer<IntWritable, StrideResult, IntWritable, DoubleWritable> {
+public class MedianReducer extends 	Reducer<IntWritable, StripeMedianResult, IntWritable, DoubleWritable> {
 	
 	private int len = 1;
 	private int []stride = null;
@@ -48,40 +49,21 @@ public class MedianReducer extends 	Reducer<IntWritable, StrideResult, IntWritab
 		super.setup(context);
 	}
 
-	public void reduce(IntWritable key, Iterable<StrideResult> values,
+	public void reduce(IntWritable key, Iterable<StripeMedianResult> values,
 			Context context) throws InterruptedException, IOException {
-		System.out.println("Here i am");
-		Iterator<StrideResult> it = values.iterator();
-		
+		Iterator<StripeMedianResult> it = values.iterator();
 		DataChunk partition = new DataChunk(rangeOff, stride);
 		int pnum = key.get();
 		DataChunk tmpar = null;
-		for (int i = 0; i < rangeStart.length; i++) {
-			
-			while (partition != null && partition.getChunkNum() < pnum) {
-				tmpar = partition;
-				partition = partition.moveUp(i);
-				
-			}
-			if(partition == null) partition = tmpar;
-			if (partition.getChunkNum() == pnum) {
-				break;
-			}
-			partition = tmpar;
-			
-		}
-		
-		StrideResult result = new StrideResult(new double[len],partition.getStart(),partition.getChunkSize());
-		while(it.hasNext())
+		StripeMedianResult result = it.next();
+		if(result.isFull())
 		{
-			StrideResult tmp = it.next();
-			System.out.println(tmp);
-			result.add(tmp);
+			context.write(key, new DoubleWritable(result.getResult()));
+		}else{
+			while(it.hasNext())
+			{
+				result.add(it.next());
+			}
 		}
-		double []data = result.getData();
-		System.out.println(result.toString());
-		Arrays.sort(data);
-		context.write(key, new DoubleWritable(data[data.length/2]));
-		
 	}
 }
