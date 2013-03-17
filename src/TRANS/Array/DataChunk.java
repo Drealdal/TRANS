@@ -292,7 +292,13 @@ public class DataChunk implements Comparable<DataChunk> {
 		}
 		return;
 	}
-
+	public int getTotalChunk()
+	{
+		int m = this.getChunkNumMove(0);
+		return m* (this.vsize[0] / this.chunkStep[0]
+						+ (this.vsize[0] % this.chunkStep[0] == 0 ? 0
+						: 1));
+	}
 	/*
 	 * �Ƿ���һ���������ཻ
 	 */

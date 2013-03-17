@@ -382,15 +382,22 @@ public class OptimusDataManager extends Thread implements OptimusDataProtocol,
 
 				chunk = new DataChunk(asize, pstep);
 				int pnum = p.getPid().getId();
+				DataChunk tmp = null;
 				for (int i = 0; i < asize.length; i++) {
-					while (chunk.getChunkNum() < pnum) {
+					while (chunk != null && chunk.getChunkNum() < pnum) {
+						tmp = chunk;
 						chunk = chunk.moveUp(i);
+					}
+					if(chunk == null)
+					{
+						chunk = tmp;
 					}
 					if (chunk.getChunkNum() == pnum) {
 						break;
 					} else {
 						chunk.moveDown(i);
 					}
+					chunk=tmp;
 				}
 				size = chunk.getSize();
 				itp = new PartitialCreateResult(new double[size],

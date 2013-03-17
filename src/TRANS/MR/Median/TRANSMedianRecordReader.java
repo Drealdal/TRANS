@@ -63,7 +63,9 @@ public class TRANSMedianRecordReader extends RecordReader<IntWritable,StripeMedi
 		if(use == null)
 		{
 			Random rand = new Random();
-			r = rand.nextInt()%h.size();
+			do{
+				r = rand.nextInt()%h.size();
+			}while(r<0);
 			use = h.get(r);
 		}
 		dp = use.getDataProtocol();
